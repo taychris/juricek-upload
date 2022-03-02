@@ -1,0 +1,10 @@
+<div class="wrapper">
+    <ng-container *ngIf="this.albums">
+        <div class="grid-container">
+            <div *ngFor="let album of albums">
+                <h2>{{ album.albumTitle }}</h2>
+                <img src="{{ album.coverImageURL }}" alt="{{ album.albumTitle }}">
+            </div>
+        </div>
+    </ng-container>
+</div>

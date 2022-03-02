@@ -1,0 +1,7 @@
+<ng-container *ngIf="categoryList">
+    <div class="category-item-container" *ngFor="let category of categoryList">
+        <img src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
+        <button routerLink="/admin-albums/{{category.categoryTitle}}">Albums</button>
+        <button routerLink="/manage-category/{{category.id}}">Edit</button>
+    </div>
+</ng-container>

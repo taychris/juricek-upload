@@ -1,0 +1,63 @@
+<div class="wrapper">
+  <ng-container *ngIf="!albumStatus" >
+    <form [formGroup]="this.albumTitleForm">
+      <label for="albumTitle">Nazov albumu:</label>
+      <input type="text" name="albumTitle" #albumTitle formControlName="albumTitle">
+      <label for="albumTitle">Kategoria albumu:</label>
+      <select name="albumCategory" #albumCategory formControlName="albumCategory">
+        <option value="svadby">Svadby</option>
+        <option value="portréty">Portréty</option>
+      </select>
+      <button (click)="albumTitleCreate(albumTitle.value, albumCategory.value)">Set the thing</button>
+    </form>
+  </ng-container>
+  
+  <ng-container *ngIf="fileNameErrorList.length >= 1">
+    <p>The following files exceeded the size limit:</p>
+    <ng-container *ngFor="let file of fileNameErrorList">
+      <p>{{ file }}</p>
+    </ng-container>
+  </ng-container>
+  
+  <ng-container *ngIf="albumStatus == 'pending'">
+    <div class="dropzone" 
+         dropzone
+         (hovered)="toggleHover($event)"
+         (dropped)="onDrop($event)"
+         [class.hovering]="isHovering">
+    
+         <h3>Potiahni všetky fotky sem.</h3>
+         <p>alebo</p>
+         <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event)">
+         <label for="fileDropRef">Browse for file</label>
+  
+    </div>
+    <input type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitle" [ngClass]="{'album-title-no-edit': albumTitleEditState == false, 'album-title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
+    <button (click)="toggleEdit()" *ngIf="!albumTitleEditState">Edit Title</button>
+    <button (click)="updateAlbumTitle(albumTitleEdit.value)" *ngIf="albumTitleEditState">Save Title</button>
+    <br>
+    <!-- <button (click)="albumConfirm()">Confirm Album</button> -->
+    <button (click)="finishAlbum()">Finish Album</button>
+    <button (click)="cancelAlbum()">Cancel Album</button>
+    <div class="column">
+      <div *ngFor="let file of files">
+        <upload-task [file]="file" [albumTitle]="albumTitle" [albumId]="fsId"></upload-task>
+      </div>
+    </div>
+    <div class="column grid-container">
+        <div class="img-container" *ngFor="let files of uploadedFiles">
+          <img src="{{files.downloadURL}}" alt="">
+          <div class="button-container">
+            <button (click)="makeCoverPhoto(fsId, files.downloadURL, files.id, files.isCover)">Set as cover</button>
+            <button (click)="deleteImage(files.id, files.downloadURL, files.isCover)">Delete</button>
+          </div>
+        </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- <div *ngIf="albumStatus == 'confirmed'">
+  <h1>Album successfully created.</h1>
+  <a target="_blank" [routerLink]="['/album', albumTitle]">Preview Album</a>
+  <button (click)="finishAlbum()">Publish Album</button>
+</div> -->

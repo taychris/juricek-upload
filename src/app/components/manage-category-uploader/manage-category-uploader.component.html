@@ -1,0 +1,56 @@
+<ng-container *ngIf="errorMsg">
+    <p>{{ errorMsg }}</p>
+</ng-container>
+
+<ng-container *ngIf="categoryResults">
+    <form [formGroup]="this.categoryForm">
+        <label for="categoryTitle">Kategoria:</label>
+        <input type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" [value]="categoryTitle" [ngClass]="{'title-no-edit': titleEditState == false, 'title-edit' : titleEditState == true }">
+        <button (click)="toggleEdit()" *ngIf="!titleEditState">Edit Title</button>
+        <button (click)="setCategoryTitle(categoryTitle.value)" *ngIf="titleEditState">Save</button>
+    </form>
+    
+    <div class="dropzone" 
+        dropzone
+        (hovered)="toggleHover($event)"
+        (dropped)="onDrop($event)"
+        [class.hovering]="isHovering">
+    
+        <h3>Potiahni fotku sem.</h3>
+        <p>alebo</p>
+        <input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)">
+        <label for="fileDropRef">Browse for file</label>
+    </div>
+    
+    <!-- <button *ngIf="!paramId" (click)="publishCategory()">Publish</button> -->
+    <button (click)="deleteCategory()">Delete Category</button>
+        
+    <div *ngIf="snapshot | async as snap">
+    
+        <div *ngIf="percentage | async as pct">
+            <ng-container *ngIf="pct !== 100">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" 
+                        [ngStyle]="{'width': pct + '%'}">
+                    </div>
+                </div>
+                <button (click)="task.pause()" [disabled]="!isActive(snap)">Pause</button>
+                <button (click)="task.resume()" [disabled]="!(snap?.state === 'paused')">Resume</button>
+                <button (click)="task.cancel()">Cancel</button>
+                {{ formatBytes(snap.bytesTransferred) }} of {{ formatBytes(snap.totalBytes) }} 
+                <!-- {{ pct | number : '1.0-0' }}% -->
+            </ng-container>
+        </div>
+    </div>
+    
+    <ng-container *ngIf="categoryResults[0].downloadURL">
+        <div class="column grid-container">
+            <div class="img-container" *ngFor="let files of categoryResults">
+              <img src="{{files.downloadURL}}" alt="">
+              <div class="button-container">
+                <button (click)="deleteImage(files.id, files.downloadURL)">Delete</button>
+              </div>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
