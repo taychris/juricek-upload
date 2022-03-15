@@ -57,11 +57,8 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
         if(doc.exists) {
           this.store.dispatch([
             new SetAlbumTitle(doc.data().albumTitle, urlParam, true),
-            new SetCoverImageId(doc.data().coverImageURL),
-            new SetCoverImageIdBefore(doc.data().coverImageURL),
           ]);
           this.setAlbumData(doc.data());
-          // return this.album;
         } else {
           this.router.back();
         }
@@ -69,6 +66,13 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
       .then(() => {
         this.gallerySubscription = this.db.collection('gallery', ref => ref.where('albumTitle', '==', this.albumos.albumTitle)).valueChanges({idField: 'id'}).subscribe((data: any) => {
           this.uploadedFiles = data;
+
+          const coverImageItem = data.find((item: any) => item.isCover === true);
+          if(coverImageItem.id) {
+            this.store.dispatch([
+              new SetCoverImageId(coverImageItem.id)
+            ]);
+          }
         });
       }).catch((e:any) => {
         console.log(e);
@@ -102,12 +106,14 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   }
 
   deleteAlbum() {
-    this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles).then(() => {
-      console.log('Successfully deleted album.');
-      this.store.dispatch([
-        new AlbumCancelled()
-      ])
-    });
+    if(window.confirm('Naozaj chceš vymazať celý album?')){
+      this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles).then(() => {
+        console.log('Successfully deleted album.');
+        this.store.dispatch([
+          new AlbumCancelled()
+        ])
+      });
+    }
   }
 
   makeCoverPhoto(albumId: string, downloadUrl: string, imageId: string, isCover: boolean) {
@@ -134,18 +140,20 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   }
 
   deleteImage(imageId: string, downloadUrl: string, isCover: boolean) {
-    this.gallerySvc.deleteImage(imageId, downloadUrl).then(() => {
-      console.log('Successfully deleted.');
-      if(isCover) {
-        this.store.dispatch([
-          new SetCoverImageId(''),
-          new SetCoverImageIdBefore(''),
-        ]);
-      }
-    })
-    .catch((e:any) => {
-      console.log(e);
-    });
+    if(window.confirm('Naozaj chceš vymazať túto fotku?')){
+      this.gallerySvc.deleteImage(imageId, downloadUrl).then(() => {
+        console.log('Successfully deleted.');
+        if(isCover) {
+          this.store.dispatch([
+            new SetCoverImageId(''),
+            new SetCoverImageIdBefore(''),
+          ]);
+        }
+      })
+      .catch((e:any) => {
+        console.log(e);
+      });
+    }
   }
 
   //toggle the hovering effect - find it in scss
@@ -173,7 +181,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
-    this.albumSubscription.unsubscribe();
+    // this.albumSubscription.unsubscribe();
     this.gallerySubscription.unsubscribe();
     this.store.dispatch([
       new AlbumCancelled()

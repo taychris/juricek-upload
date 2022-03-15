@@ -2,11 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFireUploadTask, AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, Subscription } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
-// import { Store } from '@ngxs/store';
-// import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/app.actions';
-// import { AppState } from 'src/app/shared/app.state';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -15,8 +12,6 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./manage-category-uploader.component.scss']
 })
 export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
-  //used for state management
-  // state$!: Observable<AppState>;
   titleEditState: boolean = false;
 
   percentage!: Observable<number | undefined>;
@@ -29,7 +24,7 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
 
   isHovering!: boolean;
 
-  file!: File;
+  files: File[] = [];
 
   categoryForm: FormGroup;
   
@@ -56,16 +51,14 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
 
   getResults(categoryId: string) {
     this.categorySubscription = this.db.collection('category', ref => ref.where('id', '==', categoryId)).valueChanges({idField: 'id'}).subscribe((data: any) => {
-      if(data.length > 0) {
-        this.categoryResults = data;
-        
-        this.categoryForm.patchValue({
-          categoryTitle: data[0].categoryTitle
-        });
-      } else {
-        this.errorMsg = 'No category title';
-      }
-
+      this.categoryResults = data;
+      this.categoryTitle = data[0].categoryTitle;
+      this.categoryDownloadURL = data[0].downloadURL;
+      this.categoryId = data[0].id;
+      
+      this.categoryForm.patchValue({
+        categoryTitle: data[0].categoryTitle
+      });
     });
   }
 
@@ -111,69 +104,37 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
   }
 
   deleteImage(id: string, downloadURL: string) {
-    this.storage.storage.refFromURL(downloadURL).delete();
-    this.db.collection('category').doc(id).update({ downloadURL: '', path: '' });
-  }
-
-  deleteCategory() {
-    if(this.categoryResults[0].downloadURL) {
-      this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
-        console.log('Successfully deleted cover image from storage.');
+    if(window.confirm('Naozaj chceš vymazať túto fotku?')){
+      this.storage.storage.refFromURL(downloadURL).delete().then(() => {
+        this.db.collection('category').doc(id).update({ downloadURL: '', path: '' }).then(() => {
+          console.log('Successfully deleted image.');
+        })
+        .catch((e:any) => {
+          console.log(e);
+        });
       }).catch((e:any) => {
         console.log(e);
       });
     }
-    this.db.collection('category').doc(this.categoryResults[0].id).delete().then(() => {
-      console.log('Successfully deleted category from database.');
-    })
-    .catch((e:any) => {
-      console.log(e);
-    });
   }
 
-  startUpload(coverImage: any) {
-    // The storage path
-    const path = `images/${Date.now()}_${coverImage.name}`;
-
-    // Reference to storage bucket
-    const ref = this.storage.ref(path);
-
-    // The main task
-    this.task = this.storage.upload(path, coverImage);
-
-    // Progress monitoring
-    this.percentage = this.task.percentageChanges();
-
-    this.snapshot = this.task.snapshotChanges().pipe(
-      // The file's download URL
-      finalize( async() =>  {
-        this.downloadURL = await ref.getDownloadURL().toPromise();
-
-        
-        if(this.categoryResults[0].downloadURL) { //if image is already uploaded update it
-          this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
-            this.db.collection('category').doc(this.categoryResults[0].id).update({ downloadURL: this.downloadURL, path }).then(() => {
-              console.log('Successfully updated cover image.')
-            })
-            .catch((e:any) => {
-              console.log(e);
-            });
-          })
-          .catch((e:any) => {
-            console.log(e);
-          });
-        } else { //if image is missing, upload new one
-          this.db.collection('category').doc(this.categoryResults[0].id).update({ downloadURL: this.downloadURL, path }).then(() => {
-            console.log('Successfully uploaded image.')
-          })
-          .catch((e:any) => {
-            console.log(e);
-          });
-        }
-      }),
-    );
+  deleteCategory() {
+    if(window.confirm('Naozaj chceš vymazať túto kategóriu?')){
+      if(this.categoryResults[0].downloadURL) {
+        this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
+          console.log('Successfully deleted image from storage.');
+        }).catch((e:any) => {
+          console.log(e);
+        });
+      }
+      this.db.collection('category').doc(this.categoryResults[0].id).delete().then(() => {
+        console.log('Successfully deleted category from database.');
+      })
+      .catch((e:any) => {
+        console.log(e);
+      });
+    }
   }
-
 
   //toggle the hovering effect - find it in scss
   toggleHover(event: boolean) {
@@ -185,8 +146,8 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
     if(file.item(0)!.size > 3200000) {
       this.errorMsg = "File size exceeds 3Mb.";
     } 
-    if(this.categoryResults[0].categoryTitle) {
-      this.startUpload(file.item(0)!);
+    if(this.categoryTitle) {
+      this.files[0] = file.item(0) as File;
     } else {
       this.errorMsg = "Set category name first.";
     }
@@ -197,26 +158,6 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
     if(file.target.files) {
       this.onDrop(file.target.files);
     }
-  }
-
-  isActive(snapshot:any) {
-    return snapshot.state === 'running' && snapshot.bytesTransferred < snapshot.totalBytes;
-  }
-
-  /**
-   * format bytes
-   * @param bytes (File size in bytes)
-   * @param decimals (Decimals point)
-   */
-   formatBytes(bytes:any, decimals?:any) {
-    if (bytes === 0) {
-      return '0 Bytes';
-    }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals || 2;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
   ngOnDestroy(): void {

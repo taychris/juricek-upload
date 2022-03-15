@@ -1,24 +1,33 @@
-    
-<div *ngIf="snapshot | async as snap">
+<div *ngIf="snapshot | async as snap" class="upload-component-container">
 
-    <div *ngIf="percentage | async as pct">
+    <ng-container *ngIf="percentage | async as pct">
         <ng-container *ngIf="pct !== 100">
-            <div class="progress-bar-container">
-                <div class="progress-bar" 
-                    [ngStyle]="{'width': pct + '%'}">
+            
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="large-svg">
+                <path d="M12 18L12 12" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 14L12 12L15 14" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18 21H6C5.44772 21 5 20.5523 5 20L5 4C5 3.44772 5.44772 3 6 3L13.5631 3C13.8416 3 14.1076 3.11619 14.2968 3.32059L18.7338 8.11246C18.9049 8.29731 19 8.53995 19 8.79187L19 20C19 20.5523 18.5523 21 18 21Z" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M19 9L14 9C13.4477 9 13 8.55228 13 8L13 3" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+
+            <div class="upload-details-container">
+                <div class="percentage-row">
+                    <p>{{ file?.name }}</p>
+                    <p>{{ pct | number : '1.0-0' }}%</p>
+                </div>
+                <div class="percentage-row">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" 
+                            [ngStyle]="{'width': pct + '%'}">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button (click)="task.pause()" [disabled]="!isActive(snap)">Pause</button>
-            <button (click)="task.resume()" [disabled]="!(snap?.state === 'paused')">Resume</button>
-            <button (click)="task.cancel()">Cancel</button>
-            {{ formatBytes(snap.bytesTransferred) }} of {{ formatBytes(snap.totalBytes) }} 
-            <!-- {{ pct | number : '1.0-0' }}% -->
+            <svg (click)="cancelUpload()" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="small-svg">
+                <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="#000" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5.75 5.75L18.25 18.25" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>   
+            
         </ng-container>
-    </div>
-
-    <!-- <div class="result-img-container" *ngIf="downloadURL as url">
-        <img [src]="url"><br>
-        <button (click)="makeCoverPhoto(albumId, url)">Choose as cover for album</button>
-        <button (click)="deleteImage(url)">Delete</button>
-    </div> -->
+    </ng-container>
 </div>

@@ -17,8 +17,9 @@ export class PrivateAlbumListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const urlParam = this.route.snapshot.paramMap.get('categoryTitle');
     if(urlParam) {
-      this.db.collection('album', ref => ref.where('albumCategory', '==', urlParam)).valueChanges({idField: 'id'}).subscribe((data) => {
+      this.albumSubscription = this.db.collection('album', ref => ref.where('albumCategory', '==', urlParam)).valueChanges({idField: 'id'}).subscribe((data) => {
         this.albumList = data;
+        console.log(this.albumList);
       });
     }
   }

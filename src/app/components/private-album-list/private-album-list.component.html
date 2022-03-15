@@ -1,3 +1,9 @@
-<p *ngFor="let album of albumList">
-    {{ album.albumTitle }}
-</p>
+<div class="wrapper">
+    <div class="basic-flex-container">
+        <div class="basic-flex-item" *ngFor="let album of albumList">
+            <h1 class="item-title">{{ album.albumTitle }}</h1>
+            <img src="{{ album.coverImageURL }}" alt="{{ album.albumTitle }}">
+            <button routerLink="/manage-uploader/{{album.id}}">Edit</button>
+        </div>
+    </div>
+</div>

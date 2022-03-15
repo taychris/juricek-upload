@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/compat/storage';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 
@@ -6,7 +6,6 @@ import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { GalleryService } from 'src/app/shared/gallery.service';
 
-import { UpdateCoverStatus } from 'src/app/shared/app.actions';
 import { AppState } from 'src/app/shared/app.state';
 import { Select, Store } from '@ngxs/store';
 
@@ -21,14 +20,17 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
   coverChosen!: any;
 
   @Input() file!: File;
-  @Input() albumTitle!: string;
-  @Input() albumId!: string;
+  @Input() documentTitle!: string;
+  @Input() fileId!: string;
+  @Input() collectionName!: string;
+  @Input() oldDownloadURL!: string;
+  @Output() uploaded : EventEmitter<boolean>= new EventEmitter<boolean>();
 
   percentage!: Observable<number | undefined>;
   task!: AngularFireUploadTask;
   snapshot!: Observable<any>;
   downloadURL!: string;
-  fileId!: string;
+  // fileId!: string;
 
   coverChosenSubscription: Subscription;
 
@@ -45,8 +47,10 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
   }
 
   startUpload() {
-    //the filename
-    this.fileId = this.db.createId();
+    if(!this.fileId) {
+      //the file id
+      this.fileId = this.db.createId();
+    }
     // The storage path
     // const path = `${this.albumTitle}/${Date.now()}_${this.file.name}`;
     const path = `images/${Date.now()}_${this.file.name}`;
@@ -65,9 +69,33 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
       finalize( async() =>  {
         this.downloadURL = await ref.getDownloadURL().toPromise();
 
-        this.db.collection('gallery').doc(this.fileId).set({ albumTitle: this.albumTitle, isCover: false, downloadURL: this.downloadURL, path });
+        if(this.collectionName === 'gallery') {
+          this.db.collection('gallery').doc(this.fileId).set({ albumTitle: this.documentTitle, isCover: false, downloadURL: this.downloadURL, path }).then(() => {
+            this.uploaded.emit(true);
+          });
+        }
+        if(this.collectionName === 'category') {
+          if(this.oldDownloadURL) { //if the download urls dont match, update the already created category
+            this.storage.storage.refFromURL(this.oldDownloadURL).delete().then(() => {
+              this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path }).then(() => {
+                //this.uploaded.emit(true);
+              });
+            });
+          } else { //if the category is not already created, create a new one
+            this.db.collection('category').doc(this.fileId).set({ categoryTitle: this.documentTitle, downloadURL: this.downloadURL, path, published: false, id: this.fileId }).then(() => {
+              this.uploaded.emit(true);
+            });
+          }
+        }
       }),
     );
+  }
+
+  cancelUpload() {
+    if(window.confirm('Are sure you want to cancel upload?')){
+      this.task.cancel();
+      this.snapshot = new Observable;
+     }
   }
 
   isActive(snapshot:any) {

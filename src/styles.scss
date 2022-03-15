@@ -1,10 +1,187 @@
+@font-face {
+  font-family: "Oranienbaum";
+  src: local("Oranienbaum"),
+    url(./assets/fonts/Oranienbaum-Regular.ttf) format("truetype");
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600&display=swap");
+
 body {
   margin: 0;
+  font-family: "Comfortaa", cursive;
+  font-size: 16px;
+  font-weight: 200;
+}
+
+.line-on-side {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &::before,
+  &::after {
+    content: "";
+    width: 50px;
+    height: 1px;
+    background: #bcbdbc;
+    margin: 0 10px;
+  }
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.margin-top-50 {
+  margin-top: 50px !important;
+}
+
+.margin-btm-50 {
+  margin-bottom: 50px !important;
+}
+
+button {
+  font-family: "Comfortaa", cursive;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px 17px;
+  border: 1px solid #364134;
+  transition: 0.3s ease-in-out;
+  box-shadow: 1px 1px 10px #a1a1a1;
+  cursor: pointer;
+}
+
+.white-button {
+  background: #fff;
+  color: #364134;
+  &:hover {
+    // background: #364134;
+    // color: #fff;
+    transform: scale(1.02);
+    opacity: 0.8;
+  }
+}
+
+.green-button {
+  background: #364134;
+  color: #fff;
+  &:hover {
+    // background: #fff;
+    // color: #364134;
+    transform: scale(1.02);
+    opacity: 0.8;
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 
 .wrapper {
   width: 90%;
+  min-height: 100vh;
   margin: 0 auto;
+  // overflow: hidden;
+}
+
+.basic-flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.basic-flex-item {
+  width: calc(98% / 3);
+  margin: 0% 1%;
+  display: flex;
+  flex-direction: column;
+  img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+  }
+}
+
+.basic-flex-container-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.basic-flex-row {
+  display: flex;
+  align-items: center;
+  button {
+    &:first-child {
+      margin-right: 10px;
+    }
+  }
+}
+
+.item-title {
+  text-transform: capitalize;
+  text-align: center;
+}
+
+.general-form {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+}
+
+.general-form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+input,
+select {
+  border: none;
+  border-bottom: 1px solid #364134;
+  font-family: "Comfortaa", cursive;
+  font-size: 18px;
+  font-weight: 200;
+  padding: 5px 0px;
+  transition: 0.3s ease-in-out;
+  &:focus {
+    outline: none;
+    transform: scale(1.01);
+  }
+  &:hover {
+    transform: scale(1.01);
+  }
+}
+
+label {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.large-h1 {
+  font-family: "Oranienbaum";
+  font-size: 70px;
+  font-weight: 200;
+  color: #364134;
+  line-height: 111px;
+  margin-top: 0;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute-bottom-center {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #fff;
 }
 
 .dropzone {
@@ -15,18 +192,56 @@ body {
   min-width: 80vw;
   font-weight: 200;
   height: 300px;
-  border: 2px dashed #f16624;
-  border-radius: 5px;
-  background: white;
+  border: 1px solid #364134;
+  background: #364134;
   margin: 10px 0;
+  transition: 0.3s ease-in-out;
 
   &.hovering {
-    border: 2px solid #f16624;
-    color: #dadada !important;
+    transform: scale(1.03) rotate(0.3deg);
+    z-index: 1;
+    box-shadow: 1px 1px 10px #545454;
   }
 
-  .file-label {
-    font-size: 1.2em;
+  h3 {
+    font-family: "Oranienbaum";
+    font-size: 22px;
+    color: #fff;
+    font-weight: 200;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-family: "Oranienbaum";
+    font-weight: 200;
+    color: #c0c0c0;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  input#fileDropRef {
+    display: none;
+  }
+
+  label {
+    font-family: "Comfortaa", cursive;
+    background: #fff;
+    border: 1px solid #fff;
+    padding: 15px 20px;
+    color: #364134;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: 0.3s ease-in-out;
+    box-shadow: 1px 1px 10px #a1a1a1;
+    &:hover {
+      cursor: pointer;
+      background: #364134;
+      border: 1px solid #fff;
+      color: #fff;
+    }
   }
 }
 
@@ -35,6 +250,10 @@ body {
   img {
     max-width: 100%;
   }
+}
+
+.columns-container {
+  display: flex;
 }
 
 .column {
@@ -48,35 +267,22 @@ body {
   gap: 5px 5px;
   grid-auto-flow: row;
   grid-template-columns: repeat(3, 1fr);
-  // grid-template-areas:
-  //   ". . ."
-  //   ". . ."
-  //   ". . .";
   .img-container {
     position: relative;
     img {
       width: 100%;
-      height: 83%;
+      height: 100%;
       object-fit: cover;
     }
     .button-container {
       display: flex;
       justify-content: space-between;
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      backdrop-filter: blur(5px);
     }
   }
-}
-
-.progress-bar-container {
-  width: 90%;
-  height: 10px;
-  margin: 0 auto;
-  border: 1px solid #364134;
-}
-
-.progress-bar {
-  background-color: #364134;
-  height: 100%;
-  transition: 0.5s ease;
 }
 
 .container {
@@ -161,6 +367,48 @@ body {
   }
 }
 
+.title-edit {
+  border: none;
+  border-bottom: 1px solid #364134;
+  background-color: transparent !important;
+  color: #364134;
+  font-family: "Oranienbaum";
+  font-weight: 200;
+  font-size: 35px;
+  text-transform: capitalize;
+  max-width: 320px;
+  &:focus {
+    outline: none;
+  }
+}
+
+.title-no-edit[type="text"]:disabled {
+  border: none;
+  background-color: transparent !important;
+  color: #364134;
+  font-family: "Oranienbaum";
+  font-weight: 200;
+  font-size: 35px;
+  text-transform: capitalize;
+  max-width: 320px;
+}
+
+.xs-button-svg {
+  width: 20px;
+  height: 20px;
+}
+
+.button-svg {
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  padding: 2px;
+  opacity: 0.5;
+  &:hover {
+    opacity: 0.8;
+    transform: rotate(-12deg);
+  }
+}
+
 /* Shake animation */
 @keyframes shake {
   0% {
@@ -206,12 +454,6 @@ body {
   100% {
     transform: translate(1px, -2px) rotate(-1deg);
   }
-}
-
-.title-no-edit[type="text"]:disabled {
-  border: none;
-  background-color: transparent !important;
-  color: #000;
 }
 
 // .img-container:hover .left {

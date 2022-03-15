@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularFireUploadTask, AngularFireStorage } from '@angular/fire/compat/storage';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { Store } from '@ngxs/store';
 import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/app.actions';
@@ -17,29 +18,24 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
   //used for state management
   state$!: Observable<AppState>;
   // titleEditState: boolean = false;
-
-  percentage!: Observable<number | undefined>;
-  task!: AngularFireUploadTask;
-  snapshot!: Observable<any>;
   categoryDownloadURL!: string;
-  downloadURL!: string;
   categoryId!: string;
-  paramId!: any;
+  categoryTitle!: string;
+  categoryResults!: any;
+  isPublished!: boolean;
 
   isHovering!: boolean;
 
-  file!: File;
+  files: File[] = [];
 
   categoryForm: FormGroup;
   
   errorMsg!: string;
-  categoryTitle!: string;
-  categoryResults!: any;
 
   categorySubscription!: Subscription;
   stateSubscription!: Subscription;
 
-  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private store: Store) {
+  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private store: Store, private router: Router, private location: Location) {
     this.categoryForm = this.fb.group({
       categoryTitle: ['', Validators.required],
     });
@@ -60,11 +56,11 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit(): void {
-    if(this.paramId) {
-      this.getResults(this.paramId);
+    if(this.categoryTitle) {
+      this.getResults(this.categoryTitle);
 
       this.categoryForm.patchValue({
-        categoryTitle: this.categoryResults[0].categoryTitle
+        categoryTitle: this.categoryTitle
       });
     }
   }
@@ -77,7 +73,7 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
     this.categorySubscription = this.db.collection('category',ref => ref.where('categoryTitle', '==', categoryTitle)).valueChanges({idField: 'id'}).subscribe((data: any) => {
       if(data.length > 0) {
         this.categoryResults = data;
-        console.log(this.categoryResults);
+        this.isPublished = data[0].published;
         this.store.dispatch([
           new SetCategoryDetails(data[0].categoryTitle, data[0].downloadURL, data[0].downloadURL, data[0].id)
         ]);
@@ -102,7 +98,7 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
       this.errorMsg = "File size exceeds 3Mb.";
     } 
     if(this.categoryTitle) {
-      this.startUpload(this.categoryTitle, file.item(0)!);
+      this.files[0] = file.item(0) as File;
     } else {
       this.errorMsg = "Set category name first.";
     }
@@ -115,53 +111,18 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  
-  startUpload(categoryTitle: string, coverImage: any) {
-    //check for categoryId => indentify if the category isn't already created
-    if(!this.categoryId) {
-      this.categoryId = this.db.createId();
-    }
-    // The storage path
-    const path = `images/${Date.now()}_${coverImage.name}`;
-
-    // Reference to storage bucket
-    const ref = this.storage.ref(path);
-
-    // The main task
-    this.task = this.storage.upload(path, coverImage);
-
-    // Progress monitoring
-    this.percentage = this.task.percentageChanges();
-
-    this.snapshot = this.task.snapshotChanges().pipe(
-      // The file's download URL
-      finalize( async() =>  {
-        this.downloadURL = await ref.getDownloadURL().toPromise();
-
-        
-        if(this.categoryDownloadURL) { //if the download urls dont match, update the already created category
-          this.db.collection('category').doc(this.categoryId).update({ downloadURL: this.downloadURL, path }).then(() => {
-            this.storage.storage.refFromURL(this.categoryDownloadURL).delete().then(() => {
-              // this.store.dispatch([
-              //   new SetCategoryDetails(categoryTitle, this.downloadURL, this.downloadURL, this.categoryId) 
-              // ]);
-            });
-          });
-        } else { //if the category is not already created, create a new one
-          this.db.collection('category').doc(this.categoryId).set({ categoryTitle: categoryTitle, downloadURL: this.downloadURL, path, published: false, id: this.categoryId }).then(() => {
-            this.getResults(categoryTitle);
-          });
-        }
-      }),
-    );
-  }
-
   publishCategory() {
     if(!this.categoryResults) {
       window.alert('Please upload an image first.')
     } else {
-      this.db.collection('category').doc(this.categoryId).update({ published: true });
+      this.db.collection('category').doc(this.categoryId).update({ published: true }).then(() => {
+        // this.store.dispatch([
+        //   new ResetCategoryDetails(),
+        // ]);
+      });
     }
+    
+    this.router.navigate(['/manage-category', this.categoryTitle]);
   }
 
   deleteImage(id: string, downloadURL: string) {
@@ -188,32 +149,20 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
         new ResetCategoryDetails()
       ]);
       this.categoryForm.reset();
+      this.location.back();
     }
   }
 
-  isActive(snapshot:any) {
-    return snapshot.state === 'running' && snapshot.bytesTransferred < snapshot.totalBytes;
-  }
-
-  /**
-   * format bytes
-   * @param bytes (File size in bytes)
-   * @param decimals (Decimals point)
-   */
-  formatBytes(bytes:any, decimals?:any) {
-    if (bytes === 0) {
-      return '0 Bytes';
-    }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals || 2;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  onImageUploaded() {
+    this.getResults(this.categoryTitle);
   }
 
   ngOnDestroy(): void {
+    if(this.categorySubscription) {
       this.categorySubscription.unsubscribe();
-      this.stateSubscription.unsubscribe();
+
+    }
+    this.stateSubscription.unsubscribe();
   }
 
 }

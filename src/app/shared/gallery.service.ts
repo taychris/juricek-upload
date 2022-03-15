@@ -15,12 +15,17 @@ export class GalleryService {
   }
 
   setAlbumCover(fsId: string, coverImageURL: string, imageId: string) : Promise<any> {
+    console.log(false);
     this.db.collection('gallery').doc(imageId).update({ isCover: true });
     return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
   }
 
   updateAlbumCover(fsId: string, coverImageURL: string, imageId: string, imageIdBefore: string) : Promise<any> {
-    this.db.collection('gallery').doc(imageIdBefore).update({ isCover: false });
+    this.db.collection('gallery').doc(imageIdBefore).get().toPromise().then((data: any) => {
+     if(data.data().downloadURL) {
+      this.db.collection('gallery').doc(imageIdBefore).update({ isCover: false });
+     }
+    });
     this.db.collection('gallery').doc(imageId).update({ isCover: true });
     return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
   }

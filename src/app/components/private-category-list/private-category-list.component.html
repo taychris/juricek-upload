@@ -1,7 +1,19 @@
-<ng-container *ngIf="categoryList">
-    <div class="category-item-container" *ngFor="let category of categoryList">
-        <img src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
-        <button routerLink="/admin-albums/{{category.categoryTitle}}">Albums</button>
-        <button routerLink="/manage-category/{{category.id}}">Edit</button>
+<div class="wrapper">
+    <div class="basic-flex-container full-height">
+        <div *ngIf="categoryList">
+            <h1 class="item-title large-h1">Kategórie</h1>
+            <div class="basic-flex-container">
+                <div class="basic-flex-item" *ngFor="let category of categoryList">
+                    <div class="relative">
+                        <h1 class="item-title absolute-bottom-center">{{ category.categoryTitle }}</h1>
+                        <img src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
+                    </div>
+                    <div class="basic-flex-container-row margin-top-10">
+                        <button routerLink="/admin-albums/{{category.categoryTitle}}" class="green-button">Albumy</button>
+                        <button routerLink="/manage-category/{{category.id}}" class="white-button">Zmeniť</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</ng-container>
+</div>
