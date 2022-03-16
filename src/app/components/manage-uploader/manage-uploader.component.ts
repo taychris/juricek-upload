@@ -33,11 +33,10 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   //used for state management
   private stateSubscription!: Subscription;
-  private albumSubscription!: Subscription;
   private gallerySubscription!: Subscription;
   fileNameErrorList: string[] = [];
 
-  constructor(private store: Store, private gallerySvc: GalleryService, private db: AngularFirestore, private route: ActivatedRoute, private router: Location) {
+  constructor(private store: Store, private gallerySvc: GalleryService, private db: AngularFirestore, private route: ActivatedRoute, private location: Location) {
     this.state$ = this.store.select(state => state.app);
     
     this.stateSubscription = this.state$.subscribe((state:any) => {
@@ -60,7 +59,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
           ]);
           this.setAlbumData(doc.data());
         } else {
-          this.router.back();
+          this.location.back();
         }
       })
       .then(() => {
@@ -112,6 +111,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
         this.store.dispatch([
           new AlbumCancelled()
         ])
+        this.location.back();
       });
     }
   }
@@ -181,7 +181,6 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
-    // this.albumSubscription.unsubscribe();
     this.gallerySubscription.unsubscribe();
     this.store.dispatch([
       new AlbumCancelled()

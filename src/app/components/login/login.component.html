@@ -1,0 +1,24 @@
+<div class="wrapper">
+    <div class="general-form-container">
+        <!-- <form [formGroup]="this.signUpForm" class="general-form">
+            <label for="email">Email:</label>
+            <input type="email" name="email" #email formControlName="email" placeholder="johndoe@gmail.com.." class="margin-btm-50">
+            <label for="password">Heslo:</label>
+            <input type="password" name="password" #password formControlName="password" placeholder="******.." class="margin-btm-50">
+            <label for="name">Meno:</label>
+            <input type="text" name="name" #name formControlName="name" placeholder="Adrian.." class="margin-btm-50">
+            <div style="display: flex; justify-content: center;">
+                <button (click)="signUp(email.value, name.value, password.value)" class="green-button" [disabled]="signUpForm.invalid">Ďalej</button>
+            </div>
+        </form> -->
+        <form [formGroup]="this.loginForm" class="general-form">
+            <label for="email">Email:</label>
+            <input type="email" name="email" #email formControlName="email" placeholder="johndoe@gmail.com.." class="margin-btm-50">
+            <label for="password">Heslo:</label>
+            <input type="password" name="password" #password formControlName="password" placeholder="******.." class="margin-btm-50">
+            <div style="display: flex; justify-content: center;">
+                <button (click)="signIn(email.value, password.value)" class="green-button" [disabled]="loginForm.invalid">Ďalej</button>
+            </div>
+        </form>
+    </div>
+</div>

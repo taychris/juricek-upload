@@ -27,6 +27,8 @@ import { PrivateCategoryListComponent } from './components/private-category-list
 import { PrivateAlbumListComponent } from './components/private-album-list/private-album-list.component';
 import { CreateAlbumComponent } from './components/create-album/create-album.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { LoginComponent } from './components/login/login.component';
+import { LogoutComponent } from './components/logout/logout.component';
 
 @NgModule({
   declarations: [
@@ -41,14 +43,17 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     PrivateAlbumListComponent,
     CreateAlbumComponent,
     DashboardComponent,
+    LoginComponent,
+    LogoutComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule,
     AngularFireStorageModule,
+    AngularFirestoreModule.enablePersistence(),
+    AngularFireAuthModule,
     NgxsModule.forRoot([
       AppState
     ]), 

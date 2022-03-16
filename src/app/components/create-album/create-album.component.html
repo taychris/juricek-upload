@@ -90,7 +90,7 @@
         </div>
         <div class="column">
             <div *ngFor="let file of files">
-                <upload-task [file]="file" [documentTitle]="albumTitle" [fileId]="fsId" [collectionName]="'gallery'" (uploaded)="onImageUploaded()"></upload-task>
+                <upload-task [file]="file" [documentTitle]="albumTitle" [collectionName]="'gallery'" (uploaded)="onImageUploaded()"></upload-task>
             </div>
         </div>
       </div>

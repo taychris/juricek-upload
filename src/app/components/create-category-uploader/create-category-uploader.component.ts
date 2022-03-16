@@ -116,9 +116,9 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
       window.alert('Please upload an image first.')
     } else {
       this.db.collection('category').doc(this.categoryId).update({ published: true }).then(() => {
-        // this.store.dispatch([
-        //   new ResetCategoryDetails(),
-        // ]);
+        this.store.dispatch([
+          new ResetCategoryDetails(),
+        ]);
       });
     }
     

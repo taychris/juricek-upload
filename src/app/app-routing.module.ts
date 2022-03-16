@@ -8,21 +8,28 @@ import { PrivateCategoryListComponent } from './components/private-category-list
 import { PrivateAlbumListComponent } from './components/private-album-list/private-album-list.component';
 import { CreateAlbumComponent } from './components/create-album/create-album.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { LoginComponent } from './components/login/login.component';
+import { AngularFireAuthGuard, redirectLoggedInTo, redirectUnauthorizedTo } from '@angular/fire/compat/auth-guard';
+
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
+const redirectLoggedInToDashboard = () => redirectLoggedInTo(['dashboard']);
 
 const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'login', component: LoginComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectLoggedInToDashboard } },
+  //admin home page
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin }},
   //used for creating new album & uploading files
-  { path: 'create-album', component: CreateAlbumComponent },
+  { path: 'create-album', component: CreateAlbumComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
   //used for displaying all albums in category when logged in
-  { path: 'admin-albums/:categoryTitle', component: PrivateAlbumListComponent },
+  { path: 'admin-albums/:categoryTitle', component: PrivateAlbumListComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
   //used for managing album gallery
-  { path: 'manage-uploader/:id', component: ManageUploaderComponent },
+  { path: 'manage-uploader/:id', component: ManageUploaderComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
   //used for displaying album / gallery
   { path: 'album/:albumTitle', component: AlbumComponent },
   //used for displaying all categories when logged in
-  { path: 'admin-categories', component: PrivateCategoryListComponent },
-  { path: 'create-category', component: CreateCategoryUploaderComponent },
-  { path: 'manage-category/:categoryTitle', component: ManageCategoryUploaderComponent },
+  { path: 'admin-categories', component: PrivateCategoryListComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
+  { path: 'create-category', component: CreateCategoryUploaderComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
+  { path: 'manage-category/:categoryTitle', component: ManageCategoryUploaderComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
 ];
 
 @NgModule({

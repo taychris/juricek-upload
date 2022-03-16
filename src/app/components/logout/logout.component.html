@@ -1,0 +1,3 @@
+<div class="basic-flex-container full-width">
+    <button *ngIf="authService.isLoggedIn | async" (click)="authService.SignOut()" class="white-button">Logout</button>
+</div>

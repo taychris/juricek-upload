@@ -5,6 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-manage-category-uploader',
@@ -35,7 +36,7 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
   categorySubscription!: Subscription;
   stateSubscription!: Subscription;
 
-  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private route: ActivatedRoute, private router: Router) {
+  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private route: ActivatedRoute, private router: Router, private location: Location) {
     this.categoryForm = this.fb.group({
       categoryTitle: [{value: '', disabled: true}, Validators.required],
     });
@@ -133,6 +134,8 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
       .catch((e:any) => {
         console.log(e);
       });
+
+      this.location.back();
     }
   }
 
