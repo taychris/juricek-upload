@@ -102,12 +102,12 @@ export class AppState {
 
   @Action(AlbumCancelled)
   albumCancelled({ patchState }: StateContext<AppStateModel>) {
-    patchState({ albumTitle: '', albumTitleBefore: '', coverImageId: '', coverImageIdBefore: '', fsId: '', coverChosen: false, status: 'cancelled' });
+    patchState({ albumTitle: '', albumTitleBefore: '', coverImageId: '', coverImageIdBefore: '', fsId: '', coverChosen: false, status: '' });
   }
 
   @Action(AlbumCleared)
   albumCleared({ patchState }: StateContext<AppStateModel>) {
-    patchState({ albumTitle: '', coverChosen: false, status: '' });
+    patchState({ albumTitle: '', coverChosen: false, status: '', coverImageId: '' });
   }
 
   @Action(UpdateCoverStatus)

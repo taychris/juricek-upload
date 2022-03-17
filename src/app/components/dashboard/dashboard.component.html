@@ -2,11 +2,14 @@
     <h1>Čo by si chcel robiť?</h1>
     <ul>
         <li routerLink="/create-album">Vytvoriť album</li>
-        <li routerLink="/admin-categories">Zmeniť & Vymazať album</li>
+        <li [routerLink]="['/admin-categories']" [queryParams]="{editMode: 1}">Zmeniť & Vymazať album</li>
         <!-- <li routerLink="/admin-categories">Vymazať album</li> -->
         <li routerLink="/create-category">Vytvoriť kategóriu</li>
-        <li routerLink="/admin-categories">Zmeniť & Vymazať kategóriu</li>
+        <li [routerLink]="['/admin-categories']" [queryParams]="{editMode: 2}">Zmeniť & Vymazať kategóriu</li>
         <!-- <li routerLink="/admin-categories">Vymazať kategóriu</li> -->
     </ul>
-    <logout></logout>
+    <div class="basic-flex-row">
+        <logout></logout>
+        <img routerLink="/" class="button-svg margin-left-25" src="../../../assets/svg/Home.svg" style="margin-bottom: 3px;"/>
+    </div>
 </div>

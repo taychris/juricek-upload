@@ -21,7 +21,7 @@ export class AlbumCancelled {
 }
 
 export class AlbumCleared {
-    static readonly type = '[app] album cancelled';
+    static readonly type = '[app] album cleared';
 }
 
 export class SetFileNameErrorList {

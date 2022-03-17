@@ -1,9 +1,12 @@
 <div class="wrapper">
-    <div class="basic-flex-container">
-        <div class="basic-flex-item" *ngFor="let album of albumList">
-            <h1 class="item-title">{{ album.albumTitle }}</h1>
+    <h1 class="item-title large-h1 margin-top-50">{{ urlParam }}</h1>
+    <div class="mosaic-container margin-btm-50">
+        <div class="mosaic-item relative" *ngFor="let album of albumList">
+            <!-- <h1 class="item-title large-h1">{{ album.albumTitle }}</h1> -->
             <img src="{{ album.coverImageURL }}" alt="{{ album.albumTitle }}">
-            <button routerLink="/manage-uploader/{{album.id}}">Edit</button>
+            <img routerLink="/manage-uploader/{{album.id}}" class="absolute-bottom-right button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="">
+            <!-- <div class="basic-flex-container full-width">
+            </div> -->
         </div>
     </div>
 </div>

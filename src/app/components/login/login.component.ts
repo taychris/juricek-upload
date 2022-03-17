@@ -38,6 +38,9 @@ export class LoginComponent implements OnInit {
     return this.authService.SignIn(email, password).then(() => {
       console.log('logged in.');
     })
+    .catch((e:any) => {
+      console.log(e);
+    })
   }
 
 }

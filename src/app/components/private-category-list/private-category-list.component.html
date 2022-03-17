@@ -1,7 +1,9 @@
 <div class="wrapper">
     <div class="basic-flex-container full-height">
         <div *ngIf="categoryList">
-            <h1 class="item-title large-h1">Kategórie</h1>
+            <h1 class="item-title large-h1 no-margin">Kategórie</h1>
+            <p class="informational-p margin-btm-50" *ngIf="routeParam == 1">Vyber si v ktorej kategórií si chceš pozrieť, zmeniť alebo vymazať albumy.</p>
+            <p class="informational-p margin-btm-50" *ngIf="routeParam == 2">Vyber si ktorú kategoriu si chceš pozrieť, zmeniť alebo vymazať.</p>
             <div class="basic-flex-container">
                 <div class="basic-flex-item" *ngFor="let category of categoryList">
                     <div class="relative">
@@ -9,8 +11,8 @@
                         <img src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
                     </div>
                     <div class="basic-flex-container-row margin-top-10">
-                        <button routerLink="/admin-albums/{{category.categoryTitle}}" class="green-button">Albumy</button>
-                        <button routerLink="/manage-category/{{category.id}}" class="white-button">Zmeniť</button>
+                        <button *ngIf="routeParam == 1" routerLink="/admin-albums/{{category.categoryTitle}}" class="green-button">Albumy</button>
+                        <button *ngIf="routeParam == 2" routerLink="/manage-category/{{category.id}}" class="white-button">Zmeniť</button>
                     </div>
                 </div>
             </div>

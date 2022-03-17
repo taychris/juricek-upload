@@ -122,7 +122,7 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
       });
     }
     
-    this.router.navigate(['/manage-category', this.categoryTitle]);
+    this.router.navigate(['/manage-category', this.categoryId]);
   }
 
   deleteImage(id: string, downloadURL: string) {

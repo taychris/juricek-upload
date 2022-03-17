@@ -15,7 +15,6 @@ export class GalleryService {
   }
 
   setAlbumCover(fsId: string, coverImageURL: string, imageId: string) : Promise<any> {
-    console.log(false);
     this.db.collection('gallery').doc(imageId).update({ isCover: true });
     return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
   }

@@ -1,3 +1,1 @@
-<div class="basic-flex-container full-width">
-    <button *ngIf="authService.isLoggedIn | async" (click)="authService.SignOut()" class="white-button">Logout</button>
-</div>
+<img *ngIf="authService.isLoggedIn | async" (click)="authService.SignOut()" class="button-svg" src="../../../assets/svg/Log_Out.svg" />

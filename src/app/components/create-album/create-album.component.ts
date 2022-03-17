@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { SetAlbumTitle, AlbumCancelled, SetAlbumTitleBefore, SetCoverImageId } from 'src/app/shared/app.actions';
+import { SetAlbumTitle, AlbumCancelled, SetAlbumTitleBefore, SetCoverImageId, AlbumCleared } from 'src/app/shared/app.actions';
 import { AppState } from 'src/app/shared/app.state';
 import { Observable, Subscription } from 'rxjs';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
@@ -123,7 +123,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
      this.gallerySvc.publishAlbum(this.fsId).then(() => {
        window.alert('Successfully published album.');
        this.store.dispatch([
-         new AlbumCancelled()
+         new AlbumCleared()
        ]);
        this.router.navigate(['/manage-uploader', this.fsId]);
      });
@@ -204,6 +204,9 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    this.stateSubscription.unsubscribe();
    if(this.gallerySubscription) {
      this.gallerySubscription.unsubscribe();
+   }
+   if(this.categorySubscription) {
+     this.categorySubscription.unsubscribe();
    }
  }
 }

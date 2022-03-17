@@ -2,13 +2,8 @@
     <div class="basic-flex-container-row margin-top-50">
         <div class="basic-flex-row">
             <input type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitle" [ngClass]="{'title-no-edit': albumTitleEditState == false, 'title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
-            <svg class="button-svg" (click)="toggleEdit()" *ngIf="!albumTitleEditState" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 20V21C8.26522 21 8.51957 20.8946 8.70711 20.7071L8 20ZM4 20H3C3 20.5523 3.44772 21 4 21V20ZM4 16L3.29289 15.2929C3.10536 15.4804 3 15.7348 3 16H4ZM15.2929 4.70708L16 5.41418L16 5.41418L15.2929 4.70708ZM16.7071 4.70708L16 5.41418L16 5.41418L16.7071 4.70708ZM19.2929 7.29286L20 6.58576V6.58576L19.2929 7.29286ZM19.2929 8.70708L18.5858 7.99997L19.2929 8.70708ZM8 19H4V21H8V19ZM5 20V16H3V20H5ZM4.70711 16.7071L16 5.41418L14.5858 3.99997L3.29289 15.2929L4.70711 16.7071ZM16 5.41418L18.5858 7.99997L20 6.58576L17.4142 3.99997L16 5.41418ZM18.5858 7.99997L7.29289 19.2929L8.70711 20.7071L20 9.41418L18.5858 7.99997ZM18.5858 7.99997V7.99997L20 9.41418C20.781 8.63314 20.781 7.36681 20 6.58576L18.5858 7.99997ZM16 5.41418H16L17.4142 3.99997C16.6332 3.21892 15.3668 3.21892 14.5858 3.99997L16 5.41418Z" fill="#000"/>
-                <path d="M12 8L16 12" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>                    
-            <svg class="button-svg" (click)="updateAlbumTitle(albumTitleEdit.value)" *ngIf="albumTitleEditState" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 12L10.2426 16.2427L18.7279 7.75739" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img class="button-svg" (click)="toggleEdit()" *ngIf="!albumTitleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
+            <img class="button-svg" (click)="updateAlbumTitle(albumTitleEdit.value)" *ngIf="albumTitleEditState" src="../../../assets/svg/Check.svg"/>
         </div>
         <button (click)="deleteAlbum()" class="green-button">Vymazať album</button>  
     </div>
@@ -26,19 +21,7 @@
         (dropped)="onDrop($event)"
         [class.hovering]="isHovering">
 
-        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 294.156 294.156" style="enable-background:new 0 0 294.156 294.156;" xml:space="preserve" width="70px" fill="#fff">
-            <g>
-                <path d="M227.002,108.256c-2.755-41.751-37.6-74.878-80.036-74.878c-42.447,0-77.298,33.141-80.038,74.907
-                    C28.978,113.059,0,145.39,0,184.184c0,42.234,34.36,76.595,76.595,76.595h116.483c3.313,0,6-2.687,6-6s-2.687-6-6-6H76.595
-                    C40.977,248.778,12,219.801,12,184.184c0-34.275,26.833-62.568,61.087-64.411c3.184-0.171,5.678-2.803,5.678-5.991
-                    c0-0.119-0.003-0.236-0.01-0.355c0.09-37.536,30.654-68.049,68.211-68.049c37.563,0,68.132,30.518,68.211,68.063
-                    c-0.005,0.116-0.009,0.238-0.009,0.329c0,3.196,2.505,5.831,5.696,5.992c34.37,1.741,61.292,30.038,61.292,64.421
-                    c0,19.526-8.698,37.801-23.864,50.138c-2.571,2.091-2.959,5.87-0.868,8.44c2.091,2.571,5.87,2.959,8.44,0.868
-                    c17.98-14.626,28.292-36.293,28.292-59.447C294.156,145.269,265.08,112.926,227.002,108.256z"/>
-                <path d="M140.966,141.078v76.511c0,3.313,2.687,6,6,6s6-2.687,6-6v-76.511c0-3.313-2.687-6-6-6S140.966,137.765,140.966,141.078z"/>
-                <path d="M181.283,152.204c1.536,0,3.071-0.586,4.243-1.757c2.343-2.343,2.343-6.142,0-8.485l-34.317-34.317 c-2.343-2.343-6.143-2.343-8.485,0l-34.317,34.317c-2.343,2.343-2.343,6.142,0,8.485c2.343,2.343,6.143,2.343,8.485,0 l30.074-30.074l30.074,30.074C178.212,151.618,179.748,152.204,181.283,152.204z"/>
-            </g>
-        </svg>          
+        <img src="../../../assets/svg/Cloud_Upload.svg" alt="file upload">
         <h3>Potiahni všetky fotky sem</h3>
         <p class="line-on-side">alebo</p>
         <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event)">
@@ -50,17 +33,8 @@
             <div class="img-container" *ngFor="let files of uploadedFiles">
                 <img src="{{files.downloadURL}}" alt="">
                 <div class="button-container">
-                    <svg (click)="deleteImage(files.id, files.downloadURL, files.isCover)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="button-svg xs-button-svg">
-                        <path d="M6 6V5C5.44772 5 5 5.44772 5 6H6ZM18 6H19C19 5.44772 18.5523 5 18 5V6ZM6 7H18V5H6V7ZM17 6V20H19V6H17ZM17 20H7V22H17V20ZM7 20V6H5V20H7ZM7 20H7H5C5 21.1046 5.89543 22 7 22V20ZM17 20V22C18.1046 22 19 21.1046 19 20H17Z" fill="#fff"/>
-                        <path d="M4 6H20" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M16 6V7C16.5523 7 17 6.55228 17 6H16ZM8 6H7C7 6.55228 7.44772 7 8 7V6ZM9 4H15V2H9V4ZM15 4V6H17V4H15ZM16 5H8V7H16V5ZM9 6V4H7V6H9ZM15 4H17C17 2.89543 16.1046 2 15 2V4ZM9 2C7.89543 2 7 2.89543 7 4H9V4V2Z" fill="#fff"/>
-                    </svg>
-
-                    <svg *ngIf="!files.isCover" (click)="makeCoverPhoto(fsId, files.downloadURL, files.id, files.isCover)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="button-svg xs-button-svg">
-                        <path d="M3 9V20C3 20.5523 3.44772 21 4 21H15" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 17L20 17C20.5523 17 21 16.5523 21 16L21 4C21 3.44772 20.5523 3 20 3L8 3C7.44772 3 7 3.44772 7 4L7 16C7 16.5523 7.44772 17 8 17Z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M17.7071 8.70711C18.0976 8.31658 18.0976 7.68342 17.7071 7.29289C17.3166 6.90237 16.6834 6.90237 16.2929 7.29289L17.7071 8.70711ZM13 12L12.2929 12.7071C12.6834 13.0976 13.3166 13.0976 13.7071 12.7071L13 12ZM11.7071 9.29289C11.3166 8.90237 10.6834 8.90237 10.2929 9.29289C9.90237 9.68342 9.90237 10.3166 10.2929 10.7071L11.7071 9.29289ZM16.2929 7.29289L12.2929 11.2929L13.7071 12.7071L17.7071 8.70711L16.2929 7.29289ZM13.7071 11.2929L11.7071 9.29289L10.2929 10.7071L12.2929 12.7071L13.7071 11.2929Z" fill="#fff"/>
-                    </svg>
+                    <img (click)="deleteImage(files.id, files.downloadURL, files.isCover)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
+                    <img *ngIf="!files.isCover" (click)="makeCoverPhoto(fsId, files.downloadURL, files.id, files.isCover)" src="../../../assets/svg/Select_Multiple.svg" class="xs-button-svg" alt="select multiple">
                 </div>
             </div>
         </div>

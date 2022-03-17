@@ -11,15 +11,16 @@ import { ActivatedRoute } from '@angular/router';
 export class PrivateAlbumListComponent implements OnInit, OnDestroy {
   private albumSubscription!: Subscription;
   albumList: any;
+  urlParam!: any;
 
-  constructor(private db: AngularFirestore, private route: ActivatedRoute) { }
+  constructor(private db: AngularFirestore, private route: ActivatedRoute) {
+    this.urlParam = this.route.snapshot.paramMap.get('categoryTitle'); 
+  }
 
   ngOnInit(): void {
-    const urlParam = this.route.snapshot.paramMap.get('categoryTitle');
-    if(urlParam) {
-      this.albumSubscription = this.db.collection('album', ref => ref.where('albumCategory', '==', urlParam)).valueChanges({idField: 'id'}).subscribe((data) => {
+    if(this.urlParam) {
+      this.albumSubscription = this.db.collection('album', ref => ref.where('albumCategory', '==', this.urlParam)).valueChanges({idField: 'id'}).subscribe((data) => {
         this.albumList = data;
-        console.log(this.albumList);
       });
     }
   }
