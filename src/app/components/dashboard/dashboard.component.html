@@ -1,15 +1,35 @@
-<div class="dashboard-main-container">
-    <h1>Čo by si chcel robiť?</h1>
-    <ul>
-        <li routerLink="/create-album">Vytvoriť album</li>
-        <li [routerLink]="['/admin-categories']" [queryParams]="{editMode: 1}">Zmeniť & Vymazať album</li>
-        <!-- <li routerLink="/admin-categories">Vymazať album</li> -->
-        <li routerLink="/create-category">Vytvoriť kategóriu</li>
-        <li [routerLink]="['/admin-categories']" [queryParams]="{editMode: 2}">Zmeniť & Vymazať kategóriu</li>
-        <!-- <li routerLink="/admin-categories">Vymazať kategóriu</li> -->
-    </ul>
-    <div class="basic-flex-row">
-        <logout></logout>
-        <img routerLink="/" class="button-svg margin-left-25" src="../../../assets/svg/Home.svg" style="margin-bottom: 3px;"/>
+<div class="wrapper margin-btm-50">
+    <h1 class="large-h1 margin-top-50">Albumy.</h1>
+
+    <div class="basic-flex-container-row" style="align-items: flex-start">
+        <div class="dashboard-buttons-container">
+            <div class="flex-container-start">
+                <div *ngFor="let category of categoryList" class="category-filter-button-container">
+                    <button (click)="emitCategoryValue(category.categoryTitle)" class="category-filter-button" [class.active-button]="category.categoryTitle == categorySelected">{{ category.categoryTitle }}</button>
+                    <img routerLink="/manage-category/{{category.id}}" src="../../../assets/svg/chevron-right.svg" alt="arrow down">
+                </div>
+                <div class="category-filter-button-container">
+                    <button (click)="emitCategoryValue('all')" class="category-filter-button" [class.active-button]="categorySelected == 'all'">Všetko</button>
+                </div>
+            </div>
+            <img class="divider-line" src="../../../assets/svg/divider.svg" alt="divider">
+            <div class="flex-container-start border-top-bottom">
+                <button routerLink="/create-album" class="create-button">+ ALBUM</button>
+                <button routerLink="/create-category" class="create-button">+ KATEGORIA</button>
+            </div>
+        </div>
+        <div class="basic-flex-row">
+            <logout></logout>
+            <img routerLink="/" class="button-svg margin-left-25" src="../../../assets/svg/Home.svg" style="margin-bottom: 3px;"/>
+        </div>
     </div>
+
+    <div class="album-items-grid margin-top-25">
+        <div *ngFor="let item of albumList" class="album-card">
+            <img src="{{ item.coverImageURL }}" alt="{{ item.albumTitle }}">
+            <h2>{{ item.albumTitleDisplay }}</h2>
+            <img routerLink="/manage-uploader/{{item.id}}" class="absolute-bottom-right edit-button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="pencil icon">
+        </div>
+    </div>
+
 </div>

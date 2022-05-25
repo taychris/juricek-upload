@@ -85,9 +85,8 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
             return { id, ...data };
           }))).subscribe((_doc:any) => {
             for(let i = 0; i < _doc.length; i++) {
-              this.db.doc(`album/${_doc.id}`).update({ albumCategory: categoryTitle }).then(() => {
+              this.db.doc(`album/${_doc[i].id}`).update({ albumCategory: categoryTitle }).then(() => {
                 console.log('Successfully changed title.');
-                this.toggleEdit();
               })
               .catch((e:any) => {
                 console.log(e);
@@ -98,6 +97,7 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
         .catch((e:any) => {
           console.log(e);
         });
+        this.toggleEdit();
       } else {
         this.toggleEdit();
       }

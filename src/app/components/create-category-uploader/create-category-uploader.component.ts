@@ -96,11 +96,13 @@ export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
   onDrop(file: FileList) {
     if(file.item(0)!.size > 3200000) {
       this.errorMsg = "File size exceeds 3Mb.";
-    } 
-    if(this.categoryTitle) {
-      this.files[0] = file.item(0) as File;
     } else {
-      this.errorMsg = "Set category name first.";
+      if(this.categoryTitle) {
+        this.errorMsg = "";
+        this.files[0] = file.item(0) as File;
+      } else {
+        this.errorMsg = "Set category name first.";
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 export class SetAlbumTitle {
     static readonly type = '[app] set albumTitle';
-    constructor(public payload: string, public fsId: string, public coverChosen: boolean) {}
+    constructor(public albumTitleDisplay: string, public albumTitleFormatted: string, public fsId: string, public coverChosen: boolean) {}
 }
 
 export class SetAlbumTitleBefore {

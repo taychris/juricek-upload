@@ -10,11 +10,13 @@ import { CreateAlbumComponent } from './components/create-album/create-album.com
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from './components/login/login.component';
 import { AngularFireAuthGuard, redirectLoggedInTo, redirectUnauthorizedTo } from '@angular/fire/compat/auth-guard';
+import { HomeComponent } from './components/home/home.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const redirectLoggedInToDashboard = () => redirectLoggedInTo(['dashboard']);
 
 const routes: Routes = [
+  { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectLoggedInToDashboard } },
   //admin home page
   { path: 'dashboard', component: DashboardComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin }},
@@ -25,7 +27,7 @@ const routes: Routes = [
   //used for managing album gallery
   { path: 'manage-uploader/:id', component: ManageUploaderComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
   //used for displaying album / gallery
-  { path: 'album/:albumTitle', component: AlbumComponent },
+  { path: 'album/:category', component: AlbumComponent },
   //used for displaying all categories when logged in
   { path: 'admin-categories', component: PrivateCategoryListComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },
   { path: 'create-category', component: CreateCategoryUploaderComponent, canActivate: [AngularFireAuthGuard], data: { authGuardPipe: redirectUnauthorizedToLogin } },

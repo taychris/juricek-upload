@@ -3,8 +3,8 @@ import { SetAlbumTitle, ConfirmAlbum, AlbumSuccess, AlbumCancelled, AlbumCleared
 import { tap, map, first, delay } from 'rxjs/operators';
 
 export interface AppStateModel {
-  albumTitle: string;
-  albumTitleBefore: string;
+  albumTitleDisplay: string;
+  albumTitleFormatted: string;
   coverImageId: string,
   coverImageIdBefore: string,
   fsId: string;
@@ -19,8 +19,8 @@ export interface AppStateModel {
 @State<AppStateModel>({
   name: 'app',
   defaults: {
-    albumTitle: '',
-    albumTitleBefore: '',
+    albumTitleDisplay: '',
+    albumTitleFormatted: '',
     coverImageId: '',
     coverImageIdBefore: '',
     fsId: '',
@@ -36,12 +36,12 @@ export class AppState {
   constructor() {}
 
   @Selector()
-    static albumTitle(state: AppStateModel) {
-      return state.albumTitle;
+    static albumTitleDisplay(state: AppStateModel) {
+      return state.albumTitleDisplay;
     }
   @Selector()
-    static albumTitleBefore(state: AppStateModel) {
-      return state.albumTitleBefore;
+    static albumTitleFormatted(state: AppStateModel) {
+      return state.albumTitleFormatted;
     }
   @Selector()
     static coverImageId(state: AppStateModel) {
@@ -81,13 +81,13 @@ export class AppState {
     }
     
   @Action(SetAlbumTitle)
-  setAlbumTitle({ patchState }: StateContext<AppStateModel>, { payload, fsId, coverChosen }: SetAlbumTitle) {
-    patchState({ albumTitle: payload, albumTitleBefore: payload, fsId: fsId, coverChosen: coverChosen, status: 'pending' });
+  setAlbumTitle({ patchState }: StateContext<AppStateModel>, { albumTitleDisplay, albumTitleFormatted, fsId, coverChosen }: SetAlbumTitle) {
+    patchState({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: albumTitleFormatted, fsId: fsId, coverChosen: coverChosen, status: 'pending' });
   }    
 
   @Action(SetAlbumTitleBefore)
   setAlbumTitleBefore({ patchState }: StateContext<AppStateModel>, { payload1, payload2 }: SetAlbumTitleBefore) {
-    patchState({ albumTitle: payload1, albumTitleBefore: payload2 });
+    patchState({ albumTitleDisplay: payload1, albumTitleFormatted: payload2 });
   }
 
   @Action(ConfirmAlbum, { cancelUncompleted: true })
@@ -102,12 +102,12 @@ export class AppState {
 
   @Action(AlbumCancelled)
   albumCancelled({ patchState }: StateContext<AppStateModel>) {
-    patchState({ albumTitle: '', albumTitleBefore: '', coverImageId: '', coverImageIdBefore: '', fsId: '', coverChosen: false, status: '' });
+    patchState({ albumTitleDisplay: '', albumTitleFormatted: '', coverImageId: '', coverImageIdBefore: '', fsId: '', coverChosen: false, status: '' });
   }
 
   @Action(AlbumCleared)
   albumCleared({ patchState }: StateContext<AppStateModel>) {
-    patchState({ albumTitle: '', coverChosen: false, status: '', coverImageId: '' });
+    patchState({ albumTitleDisplay: '', albumTitleFormatted: '', coverChosen: false, status: '', coverImageId: '' });
   }
 
   @Action(UpdateCoverStatus)

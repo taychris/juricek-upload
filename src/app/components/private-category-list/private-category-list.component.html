@@ -1,7 +1,8 @@
+<back-button></back-button>
 <div class="wrapper">
-    <div class="basic-flex-container full-height">
+    <div class="general-form-container full-height">
+        <h1 class="item-title large-h1 no-margin">Kategórie</h1>
         <div *ngIf="categoryList">
-            <h1 class="item-title large-h1 no-margin">Kategórie</h1>
             <p class="informational-p margin-btm-50" *ngIf="routeParam == 1">Vyber si v ktorej kategórií si chceš pozrieť, zmeniť alebo vymazať albumy.</p>
             <p class="informational-p margin-btm-50" *ngIf="routeParam == 2">Vyber si ktorú kategoriu si chceš pozrieť, zmeniť alebo vymazať.</p>
             <div class="basic-flex-container">
@@ -16,6 +17,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div *ngIf="!categoryList">
+            <p class="informational-p">Žiadne kategórie neexistujú.</p>
         </div>
     </div>
 </div>

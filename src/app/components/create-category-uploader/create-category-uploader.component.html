@@ -1,3 +1,4 @@
+<back-button></back-button>
 <div class="wrapper">
     <div class="basic-flex-container-row margin-top-50">
         <form [formGroup]="this.categoryForm">
@@ -35,7 +36,7 @@
     
     <div class="columns-container">
         <ng-container *ngIf="categoryDownloadURL">
-                <div class="column grid-container">
+                <div class="column">
                     <div class="img-container" *ngFor="let files of categoryResults">
                         <img src="{{files.downloadURL}}" alt="{{ files.categoryTitle }}">
                         <div class="button-container">

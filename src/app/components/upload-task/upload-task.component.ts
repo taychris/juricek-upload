@@ -24,13 +24,13 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
   @Input() fileId!: string;
   @Input() collectionName!: string;
   @Input() oldDownloadURL!: string;
+  @Input() albumId!: string;
   @Output() uploaded : EventEmitter<boolean>= new EventEmitter<boolean>();
 
   percentage!: Observable<number | undefined>;
   task!: AngularFireUploadTask;
   snapshot!: Observable<any>;
   downloadURL!: string;
-  // fileId!: string;
 
   coverChosenSubscription: Subscription;
 
@@ -70,7 +70,9 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
         this.downloadURL = await ref.getDownloadURL().toPromise();
 
         if(this.collectionName === 'gallery') {
-          this.db.collection('gallery').doc(this.fileId).set({ albumTitle: this.documentTitle, isCover: false, downloadURL: this.downloadURL, path }).then(() => {
+          const formattedAlbumTitle = this.documentTitle.replace(/ /g, '-').toLowerCase();
+
+          this.db.collection('gallery').doc(this.fileId).set({ albumId: this.albumId, albumTitleDisplay: this.documentTitle, albumTitleFormatted: formattedAlbumTitle, isCover: false, downloadURL: this.downloadURL, path }).then(() => {
             this.uploaded.emit(true);
           });
         }

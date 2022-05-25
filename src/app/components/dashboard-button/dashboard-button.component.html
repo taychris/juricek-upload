@@ -1,0 +1,5 @@
+<ng-container *ngIf="currentUrl === '/'">
+    <div routerLink="/dashboard" class="dashboard-button-container" *ngIf="authService.isLoggedIn | async">
+            <img src="../../../assets/svg/Planet.svg" alt="planet logo"/>
+    </div>
+</ng-container>

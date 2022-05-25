@@ -1,12 +1,18 @@
+<back-button></back-button>
 <div class="wrapper">
     <h1 class="item-title large-h1 margin-top-50">{{ urlParam }}</h1>
-    <div class="mosaic-container margin-btm-50">
-        <div class="mosaic-item relative" *ngFor="let album of albumList">
-            <!-- <h1 class="item-title large-h1">{{ album.albumTitle }}</h1> -->
-            <img src="{{ album.coverImageURL }}" alt="{{ album.albumTitle }}">
-            <img routerLink="/manage-uploader/{{album.id}}" class="absolute-bottom-right button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="">
-            <!-- <div class="basic-flex-container full-width">
-            </div> -->
+    <ng-container *ngIf="albumList">
+        <div class="mosaic-container margin-btm-50">
+            <div class="mosaic-item relative" *ngFor="let album of albumList">
+                <!-- <h1 class="item-title large-h1">{{ album.albumTitle }}</h1> -->
+                <img src="{{ album.coverImageURL }}" alt="{{ album.albumTitle }}">
+                <img routerLink="/manage-uploader/{{album.id}}" class="absolute-bottom-right button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="">
+                <!-- <div class="basic-flex-container full-width">
+                </div> -->
+            </div>
         </div>
-    </div>
+    </ng-container>
+    <ng-container *ngIf="!albumList">
+        <p class="informational-p">Žiadne albumy neexistuju v tejto kategórií.</p>
+    </ng-container>
 </div>

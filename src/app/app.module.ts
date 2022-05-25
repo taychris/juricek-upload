@@ -29,6 +29,9 @@ import { CreateAlbumComponent } from './components/create-album/create-album.com
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { DashboardButtonComponent } from './components/dashboard-button/dashboard-button.component';
+import { BackButtonComponent } from './components/back-button/back-button.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +48,9 @@ import { LogoutComponent } from './components/logout/logout.component';
     DashboardComponent,
     LoginComponent,
     LogoutComponent,
+    DashboardButtonComponent,
+    BackButtonComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

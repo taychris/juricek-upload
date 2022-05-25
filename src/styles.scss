@@ -39,6 +39,10 @@ body {
   margin-top: 10px;
 }
 
+.margin-top-25 {
+  margin-top: 25px;
+}
+
 .margin-top-50 {
   margin-top: 50px !important;
 }
@@ -62,6 +66,7 @@ button {
 .white-button {
   background: #fff;
   color: #364134;
+  box-shadow: none;
   &:hover {
     // background: #364134;
     // color: #fff;
@@ -73,6 +78,7 @@ button {
 .green-button {
   background: #364134;
   color: #fff;
+  box-shadow: none;
   &:hover {
     // background: #fff;
     // color: #364134;
@@ -95,6 +101,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .basic-flex-item {
@@ -113,6 +120,11 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .basic-flex-row {
@@ -318,6 +330,23 @@ label {
   width: 50%;
 }
 
+.img-container {
+  position: relative;
+  img {
+    max-width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+  }
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    backdrop-filter: blur(5px);
+  }
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -325,22 +354,6 @@ label {
   gap: 5px 5px;
   grid-auto-flow: row;
   grid-template-columns: repeat(3, 1fr);
-  .img-container {
-    position: relative;
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      position: absolute;
-      bottom: 0;
-      backdrop-filter: blur(5px);
-    }
-  }
 }
 
 .title-edit {
@@ -424,6 +437,52 @@ label {
 
   100% {
     transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .basic-flex-container {
+    flex-wrap: wrap;
+  }
+
+  .basic-flex-item {
+    width: unset;
+    margin-bottom: 20px;
+  }
+
+  .basic-flex-container-row {
+    flex-direction: column;
+  }
+
+  .basic-flex-row {
+    &:last-child {
+      margin-top: 15px;
+    }
+  }
+
+  .column {
+    width: unset;
+  }
+
+  .dropzone {
+    label {
+      font-size: 12px;
+      padding: 12px 16px;
+    }
+  }
+
+  .large-h1 {
+    font-size: 50px;
+  }
+
+  .general-form {
+    width: 300px;
+  }
+
+  .title-no-edit[type="text"]:disabled,
+  .title-edit {
+    max-width: 280px;
+    font-size: 32px;
   }
 }
 

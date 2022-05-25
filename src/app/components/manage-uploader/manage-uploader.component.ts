@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common'
-import { SetAlbumTitle, AlbumCancelled, SetAlbumTitleBefore, SetCoverImageId, SetCoverImageIdBefore } from 'src/app/shared/app.actions';
+import { SetAlbumTitle, AlbumCancelled, SetCoverImageId } from 'src/app/shared/app.actions';
 import { AppState } from 'src/app/shared/app.state';
 import { GalleryService } from 'src/app/shared/gallery.service';
 
@@ -16,10 +16,10 @@ import { GalleryService } from 'src/app/shared/gallery.service';
 export class ManageUploaderComponent implements OnInit, OnDestroy {
   //used for state management
   state$!: Observable<AppState>;
-  albumTitle!: string;
-  albumTitleBefore!: string;
+  albumTitleDisplay!: string;
+  albumTitleFormatted!: string;
   coverImageId!: string;
-  coverImageIdBefore!: string;
+  // coverImageIdBefore!: string;
   fsId: string = '';
   coverChosen!: boolean;
   albumos!: any;
@@ -40,10 +40,10 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
     this.state$ = this.store.select(state => state.app);
     
     this.stateSubscription = this.state$.subscribe((state:any) => {
-      this.albumTitle = state.albumTitle;
-      this.albumTitleBefore = state.albumTitleBefore;
+      this.albumTitleDisplay = state.albumTitleDisplay;
+      this.albumTitleFormatted = state.albumTitleFormatted;
       this.coverImageId = state.coverImageId;
-      this.coverImageIdBefore = state.coverImageIdBefore;
+      // this.coverImageIdBefore = state.coverImageIdBefore;
       this.fsId = state.fsId;
       this.coverChosen = state.coverChosen;
     });
@@ -55,32 +55,44 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
       this.db.collection('album').doc(urlParam).ref.get().then((doc: any) => {
         if(doc.exists) {
           this.store.dispatch([
-            new SetAlbumTitle(doc.data().albumTitle, urlParam, true),
+            new SetAlbumTitle(doc.data().albumTitleDisplay, doc.data().albumTitleFormatted, urlParam, true),
           ]);
-          this.setAlbumData(doc.data());
+          // this.setAlbumData(doc.data());
         } else {
           this.location.back();
         }
       })
       .then(() => {
-        this.gallerySubscription = this.db.collection('gallery', ref => ref.where('albumTitle', '==', this.albumos.albumTitle)).valueChanges({idField: 'id'}).subscribe((data: any) => {
-          this.uploadedFiles = data;
-
-          const coverImageItem = data.find((item: any) => item.isCover === true);
+        this.fetchGallery();
+        
+        if(this.uploadedFiles) {
+          const coverImageItem = this.uploadedFiles.find((item: any) => item.isCover === true);
+  
           if(coverImageItem.id) {
             this.store.dispatch([
               new SetCoverImageId(coverImageItem.id)
             ]);
           }
-        });
+        }
       }).catch((e:any) => {
         console.log(e);
       });
     }
   }
 
-  setAlbumData(data: any) {
-    this.albumos = data;
+  fetchGallery() {
+    return this.gallerySubscription = this.db.collection('gallery', ref => ref.where('albumId', '==', this.fsId)).valueChanges({idField: 'id'}).subscribe((data: any) => {
+
+      const coverImageItem = data.find((item: any) => item.isCover === true);
+
+      if(coverImageItem.id) {
+        this.store.dispatch([
+          new SetCoverImageId(coverImageItem.id)
+        ]);
+      }
+
+      return this.uploadedFiles = data;
+    });
   }
 
   toggleEdit() {
@@ -88,16 +100,21 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   }
 
   updateAlbumTitle(albumTitleEdit: string) {
+    const formattedAlbumTitle = albumTitleEdit.replace(/ /g, '-').toLowerCase();
+
     //update state of the app
-    if(albumTitleEdit !== this.albumTitleBefore) {
-      this.store.dispatch([
-        new SetAlbumTitleBefore(albumTitleEdit, this.albumTitle),
-      ]);
-      this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, this.albumTitleBefore).then(() => {
+    if(formattedAlbumTitle !== this.albumTitleFormatted) {
+      this.gallerySvc.updateAlbumTitle(this.fsId, formattedAlbumTitle, this.albumTitleFormatted).then(() => {
         this.toggleEdit();
+
+        this.store.dispatch([
+          new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.coverChosen)
+        ]);
+
+        // this.fetchGallery();
       })
       .catch((e:any) => {
-        console.log(e);
+        console.log(e.message);
       });
     } else {
       this.toggleEdit();
@@ -106,7 +123,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   deleteAlbum() {
     if(window.confirm('Naozaj chceš vymazať celý album?')){
-      this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles).then(() => {
+      this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
         console.log('Successfully deleted album.');
         this.store.dispatch([
           new AlbumCancelled()
@@ -124,14 +141,14 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
         this.gallerySvc.setAlbumCover(albumId, downloadUrl, imageId).then(() => {
           this.store.dispatch([
             new SetCoverImageId(imageId),
-            new SetCoverImageIdBefore(imageId)
+            // new SetCoverImageIdBefore(imageId)
           ]);
         });
       }
       if(this.coverImageId !== imageId) {
         this.gallerySvc.updateAlbumCover(albumId, downloadUrl, imageId, this.coverImageId).then(() => {
           this.store.dispatch([
-            new SetCoverImageIdBefore(this.coverImageId),
+            // new SetCoverImageIdBefore(this.coverImageId),
             new SetCoverImageId(imageId)
           ]);
         });
@@ -146,7 +163,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
         if(isCover) {
           this.store.dispatch([
             new SetCoverImageId(''),
-            new SetCoverImageIdBefore(''),
+            // new SetCoverImageIdBefore(''),
           ]);
         }
       })

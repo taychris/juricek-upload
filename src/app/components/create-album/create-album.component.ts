@@ -8,6 +8,7 @@ import { Observable, Subscription } from 'rxjs';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { GalleryService } from 'src/app/shared/gallery.service';
+import { debounce } from 'lodash';
 
 
 @Component({
@@ -18,12 +19,13 @@ import { GalleryService } from 'src/app/shared/gallery.service';
 export class CreateAlbumComponent implements OnInit, OnDestroy {
  //used for state management
  state$!: Observable<AppState>;
- albumTitle!: string;
- albumTitleBefore!: string;
+ albumTitleDisplay!: string;
+ albumTitleFormatted!: string;
  coverImageId!: string;
  fsId: string = '';
  coverChosen!: boolean;
  albumStatus!: string;
+ titleAvailable: boolean = true;
 
  albumTitleForm: FormGroup;
  albumTitleEditState: boolean = false;
@@ -46,8 +48,8 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    this.state$ = this.store.select(state => state.app);
    
    this.stateSubscription = this.state$.subscribe((state:any) => {
-     this.albumTitle = state.albumTitle;
-     this.albumTitleBefore = state.albumTitleBefore;
+     this.albumTitleDisplay = state.albumTitleDisplay;
+     this.albumTitleFormatted = state.albumTitleFormatted;
      this.coverImageId = state.coverImageId;
      this.fsId = state.fsId;
      this.coverChosen = state.coverChosen;
@@ -58,6 +60,8 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
      albumTitle: ['', Validators.required],
      albumCategory: ['', Validators.required],
    });
+
+   this.checkAlbumTitleAvailability = debounce(this.checkAlbumTitleAvailability, 400);
  }
 
  ngOnInit() {
@@ -70,8 +74,8 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  }
 
  fetchGalleryItems() {
-   if(this.albumTitle) {
-     this.db.collection('gallery', ref => ref.where('albumTitle', '==', this.albumTitle)).valueChanges({idField: 'id'}).subscribe((data:any) => {
+   if(this.albumTitleDisplay || this.albumTitleFormatted) {
+     this.db.collection('gallery', ref => ref.where('albumId', '==', this.fsId)).valueChanges({idField: 'id'}).subscribe((data:any) => {
        this.uploadedFiles = data;
      });
    }
@@ -87,26 +91,43 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    this.albumTitleEditState = !this.albumTitleEditState;
  }
 
+ checkAlbumTitleAvailability(albumTitle: any) {
+   const value = albumTitle.target.value;
+   const formattedAlbumTitle = value.replace(/ /g, '-').toLowerCase();
+
+   if(formattedAlbumTitle.length > 0) {
+    this.gallerySvc.checkAlbumTitleList(formattedAlbumTitle).toPromise().then((data) => {
+      data.data() ? this.titleAvailable = false : this.titleAvailable = true;
+     })
+   }
+ }
+
  albumTitleCreate(albumTitle: string, albumCategory: string) {
+   const formattedAlbumTitle = albumTitle.replace(/ /g, '-').toLowerCase();
    this.fsId = this.db.createId();
-   //update state of the app
-   this.store.dispatch([
-     new SetAlbumTitle(albumTitle, this.fsId, false),
-   ]);
    
-   this.gallerySvc.createAlbumTitle(this.fsId, this.albumTitle, albumCategory, '', false).then(() => {
+   this.gallerySvc.createAlbumTitle(this.fsId, formattedAlbumTitle, albumTitle, albumCategory, '', false).then(() => {
+   
+    //update state of the app
+    this.store.dispatch([
+      new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, false),
+    ]);
+
      this.albumTitleForm.reset();
    });
  }
 
  updateAlbumTitle(albumTitleEdit: string) {
+   const formattedAlbumTitle = albumTitleEdit.replace(/ /g, '-').toLowerCase();
+
    //update state of the app
-   if(albumTitleEdit !== this.albumTitleBefore) {
-     this.store.dispatch([
-       new SetAlbumTitleBefore(albumTitleEdit, this.albumTitle),
-     ]);
-     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, this.albumTitleBefore).then(() => {
+   if(formattedAlbumTitle !== this.albumTitleFormatted) {
+     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, formattedAlbumTitle).then(() => {
        this.toggleEdit();
+     
+       this.store.dispatch([
+        new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.coverChosen),
+      ]);
      })
      .catch((e:any) => {
        console.log(e);
@@ -125,13 +146,13 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
        this.store.dispatch([
          new AlbumCleared()
        ]);
-       this.router.navigate(['/manage-uploader', this.fsId]);
+       this.router.navigate(['/dashboard']);
      });
    }
  }
 
  cancelAlbum() {
-   this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles).then(() => {
+   this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
      console.log('Successfully deleted album.');
    });
    
