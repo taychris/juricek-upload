@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { map, catchError } from 'rxjs/operators';
+import urlSlug from 'url-slug';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,8 @@ export class GalleryService {
     return this.db.collection('gallery', ref => ref.where('albumTitle', '==', albumTitle));
   }
 
-  createAlbumTitle(fsId: string, albumTitleFormat: string, albumTitle: string, albumCategory: string, coverImageURL: string, published: boolean) : Promise<any> {
-    const formattedAlbumTitle = albumTitleFormat.replace(/ /g, '-').toLowerCase();
+  createAlbumTitle(fsId: string, albumTitle: string, albumTitleFormat: string, albumCategory: string, coverImageURL: string, published: boolean) : Promise<any> {
+    const formattedAlbumTitle = urlSlug(albumTitleFormat);
 
     const batch = this.db.firestore.batch();
 
@@ -48,13 +49,12 @@ export class GalleryService {
   }
 
   createAlbumTitleList(fsId: string, albumTitle: string) {
-    const formattedAlbumTitle = albumTitle.replace(/ /g, '-').toLowerCase();
+    const formattedAlbumTitle = urlSlug(albumTitle);
 
     return this.db.collection('albumList').doc(formattedAlbumTitle).set({albumId: fsId});
   }
 
   checkAlbumTitleList(albumTitle: string) {
-    console.log(albumTitle);
     return this.db.doc(`albumList/${albumTitle}`).get();
   }
 
@@ -78,8 +78,9 @@ export class GalleryService {
   }
 
   updateAlbumTitle(fsId: string, albumTitle: string, albumTitleBefore: string) : Promise<any> {
-    const formattedAlbumTitle = albumTitle.replace(/ /g, '-').toLowerCase();
-    const formattedAlbumTitleBefore = albumTitleBefore.replace(/ /g, '-').toLowerCase();
+    const albumTitleDisplay = albumTitle;
+    const formattedAlbumTitle = urlSlug(albumTitle);
+    const formattedAlbumTitleBefore = urlSlug(albumTitleBefore);
 
     this.db.collection('gallery', ref => ref.where('albumTitle', '==', formattedAlbumTitleBefore)).snapshotChanges().pipe(map(actions => actions.map(a => {
       const data = a.payload.doc.data() as {};
@@ -87,13 +88,13 @@ export class GalleryService {
       return { id, ...data };
     }))).subscribe((_doc:any) => {
       for(let i = 0; i < _doc.length; i++) {
-        this.db.doc(`gallery/${_doc[i].id}`).update({ albumTitleDisplay: albumTitle, albumTitleFormatted: formattedAlbumTitle });
+        this.db.doc(`gallery/${_doc[i].id}`).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
       }
     });
 
     const batch = this.db.firestore.batch();
 
-    batch.update(this.db.firestore.doc(`album/${fsId}`), { albumTitleDisplay: albumTitle, albumTitleFormatted: formattedAlbumTitle });
+    batch.update(this.db.firestore.doc(`album/${fsId}`), { albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
     batch.delete(this.db.firestore.doc(`albumList/${formattedAlbumTitleBefore}`));
     batch.set(this.db.firestore.doc(`albumList/${formattedAlbumTitle}`), { albumId: fsId });
 

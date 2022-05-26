@@ -6,14 +6,16 @@ import { AngularFirestoreModule } from "@angular/fire/compat/firestore";
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { AngularFireStorageModule } from "@angular/fire/compat/storage";
 import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ToastrModule } from 'ngx-toastr';
 
 //For NGXS
 import { NgxsModule } from '@ngxs/store';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsStoragePluginModule } from "@ngxs/storage-plugin";
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
-
-import { AppState } from './shared/app.state';
+import { AppState } from './shared/state/app.state';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -56,10 +58,16 @@ import { HomeComponent } from './components/home/home.component';
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireStorageModule,
     AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
+    ToastrModule.forRoot({
+      progressBar: true,
+      timeOut: 3000,
+      positionClass: 'toast-bottom-center'
+    }),
     NgxsModule.forRoot([
       AppState
     ]), 

@@ -2,11 +2,11 @@
 <div class="wrapper">
     <ng-container *ngIf="categoryResults">
         <div class="basic-flex-container-row margin-top-50">
-            <form [formGroup]="this.categoryForm">
-                <input type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" [value]="categoryTitle" [ngClass]="{'title-edit' : titleEditState == true }" class="title-no-edit">
+            <div class="basic-flex-row">
+                <input (keyup.enter)="updateCategoryTitle(categoryTitle.value)" type="text" name="categoryTitle" #categoryTitle [value]="categoryResults[0].categoryTitle" [ngClass]="{'title-no-edit': titleEditState == false, 'title-edit' : titleEditState == true }" [disabled]="!titleEditState">
                 <img class="button-svg" (click)="toggleEdit()" *ngIf="!titleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
-                <img class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" *ngIf="titleEditState" src="../../../assets/svg/Check.svg"/>
-            </form>
+                <img class="button-svg" (click)="updateCategoryTitle(categoryTitle.value)" *ngIf="titleEditState" src="../../../assets/svg/Check.svg"/>
+            </div>
             <div class="basic-flex-row margin-top-10">
                 <button (click)="deleteCategory()" class="white-button">Vymazať kategóriu</button>
             </div>

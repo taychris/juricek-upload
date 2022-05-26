@@ -13,6 +13,12 @@ body {
   font-weight: 200;
 }
 
+.toast-bottom-center {
+  bottom: 2%;
+  right: 0;
+  width: 100%;
+}
+
 .line-on-side {
   display: flex;
   justify-content: center;
@@ -452,9 +458,15 @@ label {
 
   .basic-flex-container-row {
     flex-direction: column;
+    .basic-flex-row {
+      &:first-child {
+        justify-content: space-between;
+      }
+    }
   }
 
   .basic-flex-row {
+    width: 100%;
     &:last-child {
       margin-top: 15px;
     }

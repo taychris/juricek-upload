@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-manage-category-uploader',
@@ -27,7 +28,7 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
 
   files: File[] = [];
 
-  categoryForm: FormGroup;
+  // categoryForm: FormGroup;
   
   errorMsg!: string;
   categoryTitle!: string;
@@ -37,9 +38,9 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
   stateSubscription!: Subscription;
 
   constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private route: ActivatedRoute, private router: Router, private location: Location) {
-    this.categoryForm = this.fb.group({
-      categoryTitle: [{value: '', disabled: true}, Validators.required],
-    });
+    // this.categoryForm = this.fb.group({
+    //   categoryTitle: [{value: '', disabled: true}, Validators.required],
+    // });
 
     this.categoryParamId = this.route.snapshot.paramMap.get('categoryTitle');
    }
@@ -57,28 +58,23 @@ export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
       this.categoryDownloadURL = data[0].downloadURL;
       this.categoryId = data[0].id;
       
-      this.categoryForm.patchValue({
-        categoryTitle: data[0].categoryTitle
-      });
+      // this.categoryForm.patchValue({
+      //   categoryTitle: data[0].categoryTitle
+      // });
     });
   }
 
   toggleEdit() {
     this.titleEditState = !this.titleEditState;
-    if(this.titleEditState === false) {
-      this.categoryForm.controls.categoryTitle.disable();
-    } else {
-      this.categoryForm.controls.categoryTitle.enable();
-    }
   }
 
-  setCategoryTitle(categoryTitle: string) {
-    if(!this.categoryResults[0].id) {
+  updateCategoryTitle(categoryTitle: string) {
+    if(!this.categoryId) {
       window.alert('Category id is not set.')
     } else {
-      if(categoryTitle !== this.categoryResults[0].categoryTitle) {
-        let categoryTitleBefore = this.categoryResults[0].categoryTitle;
-        this.db.collection('category').doc(this.categoryResults[0].id).update({ categoryTitle: categoryTitle }).then(() => { //first update category title in the category collection
+      if(categoryTitle !== this.categoryTitle) {
+        let categoryTitleBefore = this.categoryTitle;
+        this.db.collection('category').doc(this.categoryId).update({ categoryTitle: categoryTitle }).then(() => { //first update category title in the category collection
           this.db.collection('album', ref => ref.where('albumCategory', '==', categoryTitleBefore)).snapshotChanges().pipe(map(actions => actions.map(a => { //when previous action succeeds, update all category of albums
             const data = a.payload.doc.data() as {};
             const id = a.payload.doc.id;

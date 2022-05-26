@@ -2,11 +2,14 @@
 <div class="wrapper">
     <div class="basic-flex-container-row margin-top-50">
         <div class="basic-flex-row">
-            <input type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitleDisplay" [ngClass]="{'title-no-edit': albumTitleEditState == false, 'title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
+            <input (keyup.enter)="updateAlbumTitle(albumTitleEdit.value)" type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitleDisplay" [ngClass]="{'title-no-edit': albumTitleEditState == false, 'title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
             <img class="button-svg" (click)="toggleEdit()" *ngIf="!albumTitleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
             <img class="button-svg" (click)="updateAlbumTitle(albumTitleEdit.value)" *ngIf="albumTitleEditState" src="../../../assets/svg/Check.svg"/>
         </div>
-        <button (click)="deleteAlbum()" class="white-button margin-top-10">Vymazať album</button>  
+        <div class="basic-flex-row margin-top-10">
+            <button *ngIf="albumData && albumData.published === false" (click)="finishAlbum()" class="green-button">Zverejniť Album</button>
+            <button (click)="deleteAlbum()" class="white-button">Vymazať album</button>  
+        </div>
     </div>
 
     <ng-container *ngIf="fileNameErrorList.length >= 1">

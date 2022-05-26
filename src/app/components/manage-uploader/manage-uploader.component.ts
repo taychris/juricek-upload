@@ -4,9 +4,11 @@ import { Observable, Subscription } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common'
-import { SetAlbumTitle, AlbumCancelled, SetCoverImageId } from 'src/app/shared/app.actions';
-import { AppState } from 'src/app/shared/app.state';
+import { SetAlbumTitle, AlbumCancelled, SetCoverImageId, AlbumCleared } from 'src/app/shared/state/app.actions';
+import { AppState } from 'src/app/shared/state/app.state';
 import { GalleryService } from 'src/app/shared/gallery.service';
+import { ToastrService } from 'ngx-toastr';
+import urlSlug from 'url-slug';
 
 @Component({
   selector: 'app-manage-uploader',
@@ -22,7 +24,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   // coverImageIdBefore!: string;
   fsId: string = '';
   coverChosen!: boolean;
-  albumos!: any;
+  albumData!: any;
 
   albumTitleEditState: boolean = false;
 
@@ -36,7 +38,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   private gallerySubscription!: Subscription;
   fileNameErrorList: string[] = [];
 
-  constructor(private store: Store, private gallerySvc: GalleryService, private db: AngularFirestore, private route: ActivatedRoute, private location: Location) {
+  constructor(private store: Store, private gallerySvc: GalleryService, private db: AngularFirestore, private route: ActivatedRoute, private location: Location, private toastr: ToastrService) {
     this.state$ = this.store.select(state => state.app);
     
     this.stateSubscription = this.state$.subscribe((state:any) => {
@@ -54,6 +56,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
     if(urlParam) {
       this.db.collection('album').doc(urlParam).ref.get().then((doc: any) => {
         if(doc.exists) {
+          this.albumData = doc.data();
           this.store.dispatch([
             new SetAlbumTitle(doc.data().albumTitleDisplay, doc.data().albumTitleFormatted, urlParam, true),
           ]);
@@ -82,10 +85,9 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   fetchGallery() {
     return this.gallerySubscription = this.db.collection('gallery', ref => ref.where('albumId', '==', this.fsId)).valueChanges({idField: 'id'}).subscribe((data: any) => {
-
       const coverImageItem = data.find((item: any) => item.isCover === true);
 
-      if(coverImageItem.id) {
+      if(coverImageItem) {
         this.store.dispatch([
           new SetCoverImageId(coverImageItem.id)
         ]);
@@ -99,16 +101,29 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
     this.albumTitleEditState = !this.albumTitleEditState;
   }
 
+  finishAlbum() {
+    if(this.coverChosen === false) {
+     this.toastr.info("Titulná fotka musí byť nastavená.");
+    } else {
+      this.gallerySvc.publishAlbum(this.fsId).then(() => {
+        this.toastr.success("Úspešne zverejnený album.");
+      });
+    }
+  }
+
   updateAlbumTitle(albumTitleEdit: string) {
-    const formattedAlbumTitle = albumTitleEdit.replace(/ /g, '-').toLowerCase();
+    const albumTitleDisplay = albumTitleEdit;
+    const formattedAlbumTitle = urlSlug(albumTitleEdit);
 
     //update state of the app
     if(formattedAlbumTitle !== this.albumTitleFormatted) {
-      this.gallerySvc.updateAlbumTitle(this.fsId, formattedAlbumTitle, this.albumTitleFormatted).then(() => {
+      this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleDisplay, this.albumTitleFormatted).then(() => {
         this.toggleEdit();
 
+        this.toastr.success("Úspešne zmenený názov.");
+
         this.store.dispatch([
-          new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.coverChosen)
+          new SetAlbumTitle(albumTitleDisplay, formattedAlbumTitle, this.fsId, this.coverChosen)
         ]);
 
         // this.fetchGallery();
@@ -124,7 +139,8 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   deleteAlbum() {
     if(window.confirm('Naozaj chceš vymazať celý album?')){
       this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
-        console.log('Successfully deleted album.');
+        this.toastr.success("Úspešne vymazaný album.");
+
         this.store.dispatch([
           new AlbumCancelled()
         ])
@@ -135,10 +151,12 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
 
   makeCoverPhoto(albumId: string, downloadUrl: string, imageId: string, isCover: boolean) {
     if(isCover === true) {
-      window.alert('Image is already a cover photo')
+    this.toastr.info("Fotka je už titulná.");
     } else {
       if(!this.coverImageId) {
         this.gallerySvc.setAlbumCover(albumId, downloadUrl, imageId).then(() => {
+          this.toastr.success("Titulná fotka nastavená.");
+
           this.store.dispatch([
             new SetCoverImageId(imageId),
             // new SetCoverImageIdBefore(imageId)
@@ -147,6 +165,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
       }
       if(this.coverImageId !== imageId) {
         this.gallerySvc.updateAlbumCover(albumId, downloadUrl, imageId, this.coverImageId).then(() => {
+          this.toastr.success("Titulná fotka zmenená.");
           this.store.dispatch([
             // new SetCoverImageIdBefore(this.coverImageId),
             new SetCoverImageId(imageId)
@@ -161,10 +180,14 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
       this.gallerySvc.deleteImage(imageId, downloadUrl).then(() => {
         console.log('Successfully deleted.');
         if(isCover) {
+          this.toastr.success("Titulná fotka bola vymazaná.");
+
           this.store.dispatch([
             new SetCoverImageId(''),
             // new SetCoverImageIdBefore(''),
           ]);
+        } else {
+          this.toastr.success("Fotka bola vymazaná.");
         }
       })
       .catch((e:any) => {

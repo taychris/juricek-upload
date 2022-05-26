@@ -6,7 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { GalleryService } from 'src/app/shared/gallery.service';
 
-import { AppState } from 'src/app/shared/app.state';
+import { AppState } from 'src/app/shared/state/app.state';
 import { Select, Store } from '@ngxs/store';
 
 @Component({

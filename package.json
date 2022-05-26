@@ -10,7 +10,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~12.2.0",
+    "@angular/animations": "^12.2.16",
     "@angular/common": "~12.2.0",
     "@angular/compiler": "~12.2.0",
     "@angular/core": "~12.2.0",
@@ -25,8 +25,10 @@
     "firebase": "^9.6.6",
     "lodash": "^4.17.21",
     "magic-grid": "^3.2.4",
+    "ngx-toastr": "^14.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
+    "url-slug": "^3.0.4",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

@@ -6,8 +6,8 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, Subscription } from 'rxjs';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { Store } from '@ngxs/store';
-import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/app.actions';
-import { AppState } from 'src/app/shared/app.state';
+import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/state/app.actions';
+import { AppState } from 'src/app/shared/state/app.state';
 
 @Component({
   selector: 'app-create-category-uploader',
