@@ -9,11 +9,11 @@ import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-manage-category-uploader',
-  templateUrl: './manage-category-uploader.component.html',
-  styleUrls: ['./manage-category-uploader.component.scss']
+  selector: 'app-manage-category',
+  templateUrl: './manage-category.component.html',
+  styleUrls: ['./manage-category.component.scss']
 })
-export class ManageCategoryUploaderComponent implements OnInit, OnDestroy {
+export class ManageCategoryComponent implements OnInit, OnDestroy {
   titleEditState: boolean = false;
 
   percentage!: Observable<number | undefined>;

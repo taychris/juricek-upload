@@ -7,15 +7,16 @@ import { Location } from '@angular/common'
 import { SetAlbumTitle, AlbumCancelled, SetCoverImageId, AlbumCleared } from 'src/app/shared/state/app.actions';
 import { AppState } from 'src/app/shared/state/app.state';
 import { GalleryService } from 'src/app/shared/gallery.service';
+import { debounce } from 'lodash';
 import { ToastrService } from 'ngx-toastr';
 import urlSlug from 'url-slug';
 
 @Component({
-  selector: 'app-manage-uploader',
-  templateUrl: './manage-uploader.component.html',
-  styleUrls: ['./manage-uploader.component.scss']
+  selector: 'app-manage-album',
+  templateUrl: './manage-album.component.html',
+  styleUrls: ['./manage-album.component.scss']
 })
-export class ManageUploaderComponent implements OnInit, OnDestroy {
+export class ManageAlbumComponent implements OnInit, OnDestroy {
   //used for state management
   state$!: Observable<AppState>;
   albumTitleDisplay!: string;
@@ -25,6 +26,7 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
   fsId: string = '';
   coverChosen!: boolean;
   albumData!: any;
+  titleAvailable!: boolean;
 
   albumTitleEditState: boolean = false;
 
@@ -49,6 +51,8 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
       this.fsId = state.fsId;
       this.coverChosen = state.coverChosen;
     });
+
+    this.checkAlbumTitleAvailability = debounce(this.checkAlbumTitleAvailability, 400);
   }
 
   ngOnInit(): void {
@@ -111,12 +115,28 @@ export class ManageUploaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkAlbumTitleAvailability(albumTitle: any) {
+    const value = albumTitle.target.value;
+    const formattedAlbumTitle = urlSlug(value);
+
+    if(formattedAlbumTitle.length > 0) {
+      this.gallerySvc.checkAlbumTitleList(formattedAlbumTitle).toPromise().then((data) => {
+        if(data.data()) {
+          this.titleAvailable = false;
+          this.toastr.error("Názov albumu už existuje.");
+        } else {
+          this.titleAvailable = true;
+        }
+      })
+    }
+  }
+
   updateAlbumTitle(albumTitleEdit: string) {
     const albumTitleDisplay = albumTitleEdit;
     const formattedAlbumTitle = urlSlug(albumTitleEdit);
 
     //update state of the app
-    if(formattedAlbumTitle !== this.albumTitleFormatted) {
+    if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable) {
       this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleDisplay, this.albumTitleFormatted).then(() => {
         this.toggleEdit();
 

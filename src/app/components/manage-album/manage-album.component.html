@@ -2,7 +2,7 @@
 <div class="wrapper">
     <div class="basic-flex-container-row margin-top-50">
         <div class="basic-flex-row">
-            <input (keyup.enter)="updateAlbumTitle(albumTitleEdit.value)" type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitleDisplay" [ngClass]="{'title-no-edit': albumTitleEditState == false, 'title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
+            <input (keyup)="checkAlbumTitleAvailability($event)" (keyup.enter)="updateAlbumTitle(albumTitleEdit.value)" type="text" name="albumTitleEdit" #albumTitleEdit [value]="albumTitleDisplay" [ngClass]="{'title-no-edit': albumTitleEditState == false, 'title-edit' : albumTitleEditState == true }" [disabled]="!albumTitleEditState">
             <img class="button-svg" (click)="toggleEdit()" *ngIf="!albumTitleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
             <img class="button-svg" (click)="updateAlbumTitle(albumTitleEdit.value)" *ngIf="albumTitleEditState" src="../../../assets/svg/Check.svg"/>
         </div>

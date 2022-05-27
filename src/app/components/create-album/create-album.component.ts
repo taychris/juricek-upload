@@ -27,7 +27,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  fsId: string = '';
  coverChosen!: boolean;
  albumStatus!: string;
- titleAvailable: boolean = true;
+ titleAvailable!: boolean;
 
  albumTitleForm: FormGroup;
  albumTitleEditState: boolean = false;
@@ -99,7 +99,12 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
 
    if(formattedAlbumTitle.length > 0) {
     this.gallerySvc.checkAlbumTitleList(formattedAlbumTitle).toPromise().then((data) => {
-      data.data() ? this.titleAvailable = false : this.titleAvailable = true;
+      if(data.data()) {
+        this.titleAvailable = false;
+        this.toastr.error("Názov albumu už existuje.");
+      } else {
+        this.titleAvailable = true;
+      }
      })
    }
  }
@@ -123,7 +128,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    const formattedAlbumTitle = urlSlug(albumTitleEdit);
 
    //update state of the app
-   if(formattedAlbumTitle !== this.albumTitleFormatted) {
+   if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable) {
      this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, formattedAlbumTitle).then(() => {
        this.toggleEdit();
 

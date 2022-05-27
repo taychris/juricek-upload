@@ -28,7 +28,7 @@
         <div *ngFor="let item of albumList" class="album-card">
             <img src="{{ item.coverImageURL }}" alt="{{ item.albumTitle }}">
             <h2>{{ item.albumTitleDisplay }}</h2>
-            <img routerLink="/manage-uploader/{{item.id}}" class="absolute-bottom-right edit-button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="pencil icon">
+            <img routerLink="/manage-album/{{item.id}}" class="absolute-bottom-right edit-button-svg" src="../../../assets/svg/Edit_Pencil_01.svg" alt="pencil icon">
         </div>
     </div>
 

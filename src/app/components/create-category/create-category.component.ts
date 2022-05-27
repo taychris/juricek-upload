@@ -10,11 +10,11 @@ import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/state/a
 import { AppState } from 'src/app/shared/state/app.state';
 
 @Component({
-  selector: 'app-create-category-uploader',
-  templateUrl: './create-category-uploader.component.html',
-  styleUrls: ['./create-category-uploader.component.scss']
+  selector: 'app-create-category',
+  templateUrl: './create-category.component.html',
+  styleUrls: ['./create-category.component.scss']
 })
-export class CreateCategoryUploaderComponent implements OnInit, OnDestroy {
+export class CreateCategoryComponent implements OnInit, OnDestroy {
   //used for state management
   state$!: Observable<AppState>;
   // titleEditState: boolean = false;

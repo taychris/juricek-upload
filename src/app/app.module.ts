@@ -22,11 +22,6 @@ import { AppComponent } from './app.component';
 import { DropzoneDirective } from './dropzone.directive';
 import { UploadTaskComponent } from './components/upload-task/upload-task.component';
 import { AlbumComponent } from './components/album/album.component';
-import { ManageUploaderComponent } from './components/manage-uploader/manage-uploader.component';
-import { CreateCategoryUploaderComponent } from './components/create-category-uploader/create-category-uploader.component';
-import { ManageCategoryUploaderComponent } from './components/manage-category-uploader/manage-category-uploader.component';
-import { PrivateCategoryListComponent } from './components/private-category-list/private-category-list.component';
-import { PrivateAlbumListComponent } from './components/private-album-list/private-album-list.component';
 import { CreateAlbumComponent } from './components/create-album/create-album.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from './components/login/login.component';
@@ -34,6 +29,9 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { DashboardButtonComponent } from './components/dashboard-button/dashboard-button.component';
 import { BackButtonComponent } from './components/back-button/back-button.component';
 import { HomeComponent } from './components/home/home.component';
+import { ManageAlbumComponent } from './components/manage-album/manage-album.component';
+import { ManageCategoryComponent } from './components/manage-category/manage-category.component';
+import { CreateCategoryComponent } from './components/create-category/create-category.component';
 
 @NgModule({
   declarations: [
@@ -41,18 +39,16 @@ import { HomeComponent } from './components/home/home.component';
     DropzoneDirective,
     UploadTaskComponent,
     AlbumComponent,
-    ManageUploaderComponent,
-    CreateCategoryUploaderComponent,
-    ManageCategoryUploaderComponent,
-    PrivateCategoryListComponent,
-    PrivateAlbumListComponent,
     CreateAlbumComponent,
+    CreateCategoryComponent,
     DashboardComponent,
     LoginComponent,
     LogoutComponent,
     DashboardButtonComponent,
     BackButtonComponent,
     HomeComponent,
+    ManageAlbumComponent,
+    ManageCategoryComponent,
   ],
   imports: [
     BrowserModule,
