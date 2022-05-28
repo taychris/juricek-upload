@@ -1,0 +1,21 @@
+<ng-container *ngIf="!albumTitleDisplay" >
+    <div class="general-form-container">
+        <h1 class="large-h1 no-margin">Vytvoriť album.</h1>
+        <form [formGroup]="this.albumTitleForm" class="general-form">
+        <div style="display:flex; flex-direction: column; position: relative;">
+            <label class="margin-top-50"  for="albumTitle">Názov albumu:</label>
+            <input (keyup)="checkAlbumTitleAvailability($event)" type="text" name="albumTitle" #albumTitle formControlName="albumTitle" placeholder="Fantastický album..">
+        </div>
+        <label class="margin-top-50" for="albumTitle">Kategória albumu:</label>
+        <select name="albumCategory" #albumCategory formControlName="albumCategory">
+            <option value="" disabled selected>Vybrať..</option>
+            <ng-container *ngFor="let category of categoryList">
+            <option value="{{ category.categoryTitle }}">{{ category.categoryTitle }}</option>
+            </ng-container>
+        </select>
+        <div style="display: flex; justify-content: center;">
+            <button (click)="albumTitleCreate(albumTitle.value, albumCategory.value)" class="green-button margin-top-50" [disabled]="albumTitleForm.invalid || !titleAvailable">Ďalej</button>
+        </div>
+        </form>
+    </div>
+</ng-container>

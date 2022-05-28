@@ -12,13 +12,6 @@
         </div>
     </div>
 
-    <ng-container *ngIf="fileNameErrorList.length >= 1">
-        <p class="margin-top-50">Nasledujúce fotky presiahly veľkosť 3.5Mb:</p>
-        <ng-container *ngFor="let file of fileNameErrorList">
-        <p>{{ file }}</p>
-        </ng-container>
-    </ng-container>
-
     <div class="dropzone margin-top-50" 
         dropzone
         (hovered)="toggleHover($event)"

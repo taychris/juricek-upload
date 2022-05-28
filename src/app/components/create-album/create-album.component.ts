@@ -18,6 +18,7 @@ import urlSlug from 'url-slug';
   templateUrl: './create-album.component.html',
   styleUrls: ['./create-album.component.scss']
 })
+
 export class CreateAlbumComponent implements OnInit, OnDestroy {
  //used for state management
  state$!: Observable<AppState>;
@@ -109,20 +110,20 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    }
  }
 
- albumTitleCreate(albumTitle: string, albumCategory: string) {
-   const formattedAlbumTitle = urlSlug(albumTitle)
-   this.fsId = this.db.createId();
+//  albumTitleCreate(albumTitle: string, albumCategory: string) {
+//    const formattedAlbumTitle = urlSlug(albumTitle)
+//    this.fsId = this.db.createId();
    
-   this.gallerySvc.createAlbumTitle(this.fsId, albumTitle, formattedAlbumTitle, albumCategory, '', false).then(() => {
+//    this.gallerySvc.createAlbumTitle(this.fsId, albumTitle, formattedAlbumTitle, albumCategory, '', false).then(() => {
    
-    //update state of the app
-    this.store.dispatch([
-      new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, false),
-    ]);
+//     //update state of the app
+//     this.store.dispatch([
+//       new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, false),
+//     ]);
 
-     this.albumTitleForm.reset();
-   });
- }
+//      this.albumTitleForm.reset();
+//    });
+//  }
 
  updateAlbumTitle(albumTitleEdit: string) {
    const formattedAlbumTitle = urlSlug(albumTitleEdit);
@@ -172,7 +173,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
     new AlbumCancelled()
   ]);
 
-  this.location.back();
+  this.router.navigate(['/dashboard']);
  }
 
  makeCoverPhoto(albumId: string, downloadUrl: string, imageId: string, isCover: boolean) {
@@ -224,7 +225,8 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  onDrop(files: FileList) {
    for (let i = 0; i < files.length; i++) {
      if(files.item(i)!.size > 3200000) {
-       this.fileNameErrorList.push(files.item(i)!.name);
+      //  this.fileNameErrorList.push(files.item(i)!.name);
+      this.toastr.error("Niektoré presiahli veľkosť 3Mb.");
      } else {
        this.files.push(files.item(i)!);
      }
@@ -240,11 +242,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
 
  ngOnDestroy(): void {
    this.stateSubscription.unsubscribe();
-   if(this.gallerySubscription) {
-     this.gallerySubscription.unsubscribe();
-   }
-   if(this.categorySubscription) {
-     this.categorySubscription.unsubscribe();
-   }
+   this.categorySubscription.unsubscribe();
+   this.gallerySubscription ? this.gallerySubscription.unsubscribe() : null;
  }
 }

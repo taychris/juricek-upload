@@ -32,6 +32,8 @@ import { HomeComponent } from './components/home/home.component';
 import { ManageAlbumComponent } from './components/manage-album/manage-album.component';
 import { ManageCategoryComponent } from './components/manage-category/manage-category.component';
 import { CreateCategoryComponent } from './components/create-category/create-category.component';
+import { CreateAlbumTitleComponent } from './components/create-album-title/create-album-title.component';
+import { CreateCategoryTitleComponent } from './components/create-category-title/create-category-title.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +51,8 @@ import { CreateCategoryComponent } from './components/create-category/create-cat
     HomeComponent,
     ManageAlbumComponent,
     ManageCategoryComponent,
+    CreateAlbumTitleComponent,
+    CreateCategoryTitleComponent,
   ],
   imports: [
     BrowserModule,

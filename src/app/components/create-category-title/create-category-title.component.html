@@ -1,0 +1,14 @@
+<ng-container *ngIf="!categoryTitle" >
+    <div class="general-form-container">
+        <h1 class="large-h1 no-margin">Vytvoriť kategóriu.</h1>
+        <form [formGroup]="this.categoryForm" class="general-form">
+            <div style="display:flex; flex-direction: column; position: relative;">
+                <label class="margin-top-50"  for="categoryTitle">Názov albumu:</label>
+                <input (keyup.enter)="setCategoryTitle(categoryTitle.value)" type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" placeholder="Fantastická kategória..">
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <button (click)="setCategoryTitle(categoryTitle.value)" class="green-button margin-top-50" [disabled]="categoryForm.invalid">Ďalej</button>
+            </div>
+        </form>
+    </div>
+</ng-container>

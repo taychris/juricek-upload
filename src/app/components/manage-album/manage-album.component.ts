@@ -225,7 +225,8 @@ export class ManageAlbumComponent implements OnInit, OnDestroy {
   onDrop(files: FileList) {
     for (let i = 0; i < files.length; i++) {
       if(files.item(i)!.size > 3200000) {
-        this.fileNameErrorList.push(files.item(i)!.name);
+        // this.fileNameErrorList.push(files.item(i)!.name);
+        this.toastr.error("Niektoré presiahli veľkosť 3Mb.");
       } else {
         this.files.push(files.item(i)!);
       }

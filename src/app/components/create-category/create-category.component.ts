@@ -133,16 +133,9 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
   }
 
   cancelCreation() {
-    if(this.categoryResults) {
+    if(this.categoryId) {
+      this.deleteCategoryDocument();
       this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
-        this.db.collection('category').doc(this.categoryResults[0].id).delete().then(() => {
-          this.store.dispatch([
-            new ResetCategoryDetails()
-          ]);
-        })
-        .catch((e:any) => {
-          console.log(e);
-        });
       }).catch((e:any) => {
         console.log(e);
       });
@@ -153,6 +146,17 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
       this.categoryForm.reset();
       this.location.back();
     }
+  }
+
+  deleteCategoryDocument() : Promise<any> {
+    return this.db.collection('category').doc(this.categoryId).delete().then(() => {
+      this.store.dispatch([
+        new ResetCategoryDetails()
+      ]);
+    })
+    .catch((e:any) => {
+      console.log(e);
+    });
   }
 
   onImageUploaded() {

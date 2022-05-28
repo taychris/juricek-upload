@@ -1,55 +1,56 @@
 <back-button></back-button>
 <div class="wrapper">
-    <div class="basic-flex-container-row margin-top-50">
-        <form [formGroup]="this.categoryForm">
-            <input type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" [value]="categoryTitle" class="title-edit">
-            <!-- <button (click)="setCategoryTitle(categoryTitle.value)">Save</button> -->
-            <!-- <svg class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 12L10.2426 16.2427L18.7279 7.75739" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg> -->
-            <img class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" src="../../../assets/svg/Check.svg"/>
-        </form>
-
-        <div class="basic-flex-row">
-            <button *ngIf="!isPublished" (click)="publishCategory()" class="green-button">Uložiť</button>
-            <button (click)="cancelCreation()" class="white-button">Zrušiť</button>
+    <app-create-category-title></app-create-category-title>
+    
+    <ng-container *ngIf="categoryTitle">
+        <div class="basic-flex-container-row margin-top-50">
+            <form [formGroup]="this.categoryForm">
+                <input type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" [value]="categoryTitle" class="title-edit">
+                <!-- <button (click)="setCategoryTitle(categoryTitle.value)">Save</button> -->
+                <!-- <svg class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10.2426 16.2427L18.7279 7.75739" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg> -->
+                <img class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" src="../../../assets/svg/Check.svg"/>
+            </form>
+    
+            <div class="basic-flex-row">
+                <button *ngIf="!isPublished" (click)="publishCategory()" class="green-button">Uložiť</button>
+                <button (click)="cancelCreation()" class="white-button">Zrušiť</button>
+            </div>
         </div>
-    </div>
-
-    <ng-container *ngIf="errorMsg">
-        <p class="margin-top-50">{{ errorMsg }}</p>
-    </ng-container>
-
-    <div class="dropzone margin-top-50" 
-        dropzone
-        (hovered)="toggleHover($event)"
-        (dropped)="onDrop($event)"
-        [class.hovering]="isHovering">
     
-        <img src="../../../assets/svg/Cloud_Upload.svg" alt="file upload">  
-        <h3>Potiahni všetky fotky sem</h3>
-        <p class="line-on-side">alebo</p>
-        <input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)">
-        <label for="fileDropRef">Vyber fotky</label>
-    </div>
-    
-    
-    <div class="columns-container">
-        <ng-container *ngIf="categoryDownloadURL">
-                <div class="column">
-                    <div class="img-container" *ngFor="let files of categoryResults">
-                        <img src="{{files.downloadURL}}" alt="{{ files.categoryTitle }}">
-                        <div class="button-container">
-                            <img (click)="deleteImage(files.id, files.downloadURL)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
+        <div class="dropzone margin-top-50" 
+            dropzone
+            (hovered)="toggleHover($event)"
+            (dropped)="onDrop($event)"
+            [class.hovering]="isHovering">
+        
+            <img src="../../../assets/svg/Cloud_Upload.svg" alt="file upload">  
+            <h3>Potiahni všetky fotky sem</h3>
+            <p class="line-on-side">alebo</p>
+            <input type="file" #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event)">
+            <label for="fileDropRef">Vyber fotky</label>
+        </div>
+        
+        
+        <div class="columns-container">
+            <ng-container *ngIf="categoryDownloadURL">
+                    <div class="column">
+                        <div class="img-container" *ngFor="let files of categoryResults">
+                            <img src="{{files.downloadURL}}" alt="{{ files.categoryTitle }}">
+                            <div class="button-container">
+                                <img (click)="deleteImage(files.id, files.downloadURL)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
+                            </div>
                         </div>
                     </div>
-                </div>
-        </ng-container>
-        <div class="column">
-            <ng-container *ngFor="let file of files">
-                <upload-task [file]="file" [documentTitle]="categoryTitle.value" [fileId]="categoryId" [collectionName]="'category'" [oldDownloadURL]="this.categoryDownloadURL" (uploaded)="onImageUploaded()"></upload-task>
             </ng-container>
+            <div class="column">
+                <ng-container *ngFor="let file of files">
+                    <upload-task [file]="file" [documentTitle]="categoryTitle.value" [fileId]="categoryId" [collectionName]="'category'" [oldDownloadURL]="this.categoryDownloadURL" (uploaded)="onImageUploaded()"></upload-task>
+                </ng-container>
+            </div>
         </div>
-    </div>
+
+    </ng-container>
 </div>
 
