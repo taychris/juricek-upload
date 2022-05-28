@@ -1,7 +1,7 @@
 <back-button></back-button>
 <div class="wrapper">
     <app-create-category-title></app-create-category-title>
-    
+
     <ng-container *ngIf="categoryTitle">
         <div class="basic-flex-container-row margin-top-50">
             <form [formGroup]="this.categoryForm">
@@ -34,12 +34,12 @@
         
         
         <div class="columns-container">
-            <ng-container *ngIf="categoryDownloadURL">
+            <ng-container *ngIf="categoryDownloadURL !== 'default'">
                     <div class="column">
-                        <div class="img-container" *ngFor="let files of categoryResults">
-                            <img src="{{files.downloadURL}}" alt="{{ files.categoryTitle }}">
+                        <div class="img-container">
+                            <img src="{{categoryDownloadURL}}" alt="{{ categoryTitle }}">
                             <div class="button-container">
-                                <img (click)="deleteImage(files.id, files.downloadURL)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
+                                <img (click)="deleteImage(categoryId, categoryDownloadURL)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
                             </div>
                         </div>
                     </div>

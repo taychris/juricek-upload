@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, Subscription } from 'rxjs';
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
@@ -42,9 +41,9 @@ export class CreateCategoryTitleComponent implements OnInit, OnDestroy {
   setCategoryTitle(categoryTitle: string) {
     this.categoryId = this.db.createId();
 
-    this.db.collection('category').doc(this.categoryId).set({ id: this.categoryId, categoryTitle: categoryTitle, downloadURL: '', path: '', published: false  }).then(() => {
+    this.db.collection('category').doc(this.categoryId).set({ id: this.categoryId, categoryTitle: categoryTitle, downloadURL: 'default', path: '', published: false  }).then(() => {
       this.store.dispatch([
-        new SetCategoryDetails(categoryTitle, '', '', this.categoryId)
+        new SetCategoryDetails(categoryTitle, 'default', 'default', this.categoryId)
       ]);
     })
     .catch((e:any) => {
@@ -54,5 +53,8 @@ export class CreateCategoryTitleComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
+    this.store.dispatch([
+      new ResetCategoryDetails()
+    ]);
   }
 }

@@ -77,14 +77,15 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
           });
         }
         if(this.collectionName === 'category') {
-          if(this.oldDownloadURL) { //if the download urls dont match, update the already created category
+          if(this.oldDownloadURL !== 'default') { //if the download urls dont match, update the already created category
             this.storage.storage.refFromURL(this.oldDownloadURL).delete().then(() => {
               this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path }).then(() => {
                 //this.uploaded.emit(true);
+                this.uploaded.emit(true);
               });
             });
           } else { //if the category is not already created, create a new one
-            this.db.collection('category').doc(this.fileId).set({ categoryTitle: this.documentTitle, downloadURL: this.downloadURL, path, published: false, id: this.fileId }).then(() => {
+            this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path }).then(() => {
               this.uploaded.emit(true);
             });
           }

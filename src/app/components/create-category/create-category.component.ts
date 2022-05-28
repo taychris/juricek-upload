@@ -56,8 +56,8 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit(): void {
-    if(this.categoryTitle) {
-      this.getResults(this.categoryTitle);
+    if(this.categoryId) {
+      this.getResults(this.categoryId);
 
       this.categoryForm.patchValue({
         categoryTitle: this.categoryTitle
@@ -69,13 +69,14 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
   //   this.titleEditState = !this.titleEditState;
   // }
 
-  getResults(categoryTitle: string) {
-    this.categorySubscription = this.db.collection('category',ref => ref.where('categoryTitle', '==', categoryTitle)).valueChanges({idField: 'id'}).subscribe((data: any) => {
-      if(data.length > 0) {
+  getResults(categoryId: string) {
+    this.categorySubscription = this.db.doc(`category/${categoryId}`).valueChanges({idField: 'id'}).subscribe((data: any) => {
+      console.log(data);
+      if(data) {
         this.categoryResults = data;
-        this.isPublished = data[0].published;
+        this.isPublished = data.published;
         this.store.dispatch([
-          new SetCategoryDetails(data[0].categoryTitle, data[0].downloadURL, data[0].downloadURL, data[0].id)
+          new SetCategoryDetails(data.categoryTitle, data.downloadURL, data.downloadURL, data.id)
         ]);
       }
     });
@@ -160,7 +161,7 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
   }
 
   onImageUploaded() {
-    this.getResults(this.categoryTitle);
+    this.getResults(this.categoryId);
   }
 
   ngOnDestroy(): void {
