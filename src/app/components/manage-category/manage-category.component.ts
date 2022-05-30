@@ -77,43 +77,73 @@ export class ManageCategoryComponent implements OnInit, OnDestroy {
         let categoryTitleBefore = this.categoryTitle;
 
         var categoryRef = this.db.firestore.doc(`category/${this.categoryId}`);
+        this.db.firestore.doc(`category/${this.categoryId}/album`).get().then((snapshot: any) => {
+          console.log(snapshot)
+          if(snapshot) {
+            for(let i = 0; i < snapshot.length; i++) {
+              var albumRef = this.db.firestore.doc(`category/${this.categoryId}/album/${snapshot[i].id}`);
+              batch.update(albumRef, { 'albumCategory' : categoryTitle });
+              
+              //after the for loop finishes, update the category title
+              if(i == snapshot.length - 1) {
+                batch.update(categoryRef, { categoryTitle: categoryTitle });
 
-        this.db.collection('album', ref => ref.where('albumCategory', '==', categoryTitleBefore)).snapshotChanges().pipe(map(actions => actions.map(a => { //when previous action succeeds, update all category of albums
-          const data = a.payload.doc.data() as {};
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        }))).subscribe((_doc:any) => {
-          for(let i = 0; i < _doc.length; i++) {
-            var albumRef = this.db.firestore.doc(`album/${_doc[i].id}`);
-
-            batch.update(albumRef, { 'albumCategory' : categoryTitle });
-            
-            //after the for loop finishes, update the category title
-            if(i == _doc.length - 1) {
-              batch.update(categoryRef, { categoryTitle: categoryTitle });
-
-              //updating the documents all at once
-              batch.commit().then(() => {
-                this.toastr.success('Úspešne zmenený názov kategórie.');
-              })
-              .catch((e:any) => {
-                console.log(e);
-                this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
-              });
+                batch.commit().then(() => {
+                  this.toggleEdit();
+                  this.toastr.success('Úspešne zmenený názov kategórie.');
+                })
+                .catch((e:any) => {
+                  console.log(e);
+                  this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
+                });
+              }
             }
           }
-        });
-        this.toggleEdit();
+        })
       } else {
         this.toggleEdit();
       }
+
+      //   this.db.collection('album', ref => ref.where('albumCategory', '==', categoryTitleBefore)).snapshotChanges().pipe(map(actions => actions.map(a => { //when previous action succeeds, update all category of albums
+      //     const data = a.payload.doc.data() as {};
+      //     const id = a.payload.doc.id;
+      //     return { id, ...data };
+      //   }))).subscribe((_doc:any) => {
+      //     for(let i = 0; i < _doc.length; i++) {
+      //       var albumRef = this.db.firestore.doc(`album/${_doc[i].id}`);
+
+      //       batch.update(albumRef, { 'albumCategory' : categoryTitle });
+            
+      //       //after the for loop finishes, update the category title
+      //       if(i == _doc.length - 1) {
+      //         batch.update(categoryRef, { categoryTitle: categoryTitle });
+
+      //         //updating the documents all at once
+      //         batch.commit().then(() => {
+      //           this.toastr.success('Úspešne zmenený názov kategórie.');
+      //         })
+      //         .catch((e:any) => {
+      //           console.log(e);
+      //           this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
+      //         });
+      //       }
+      //     }
+      //   });
+      //   this.toggleEdit();
+      // } else {
+      //   this.toggleEdit();
+      // }
     }
   }
 
-  deleteImage(id: string, downloadURL: string) {
+  /* 
+    First delete the image from the storage,
+    and based on the result, reset the required fields.
+  */
+  deleteImage(categoryId: string, downloadURL: string) {
     if(window.confirm('Naozaj chceš vymazať túto fotku?')){
       this.storage.storage.refFromURL(downloadURL).delete().then(() => {
-        this.db.collection('category').doc(id).update({ downloadURL: '', path: '' }).then(() => {
+        this.db.collection('category').doc(categoryId).update({ downloadURL: '', path: '' }).then(() => {
           console.log('Successfully updated category.');
           this.toastr.success('Úspešne vymazaná kategória.');
         })
@@ -128,26 +158,80 @@ export class ManageCategoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  /* 
+    In the following function, don't use batch commit,
+    because it has a limit of 500 commits at a time.
+    Albums can have much larger commits than that.
+    Whole folders with sub-folders cannot be deleted at once.
+    Same goes for collections and subcollections. Sadly.
+  */
   deleteCategory() {
     if(window.confirm('Naozaj chceš vymazať túto kategóriu?')){
       if(this.categoryResults[0].downloadURL) {
-        this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
-          console.log('Successfully deleted image from storage.');
-          this.db.collection('category').doc(this.categoryResults[0].id).delete().then(() => {
-            console.log('Successfully deleted category from database.');
-            this.toastr.success('Úspešne vymazaná kategória.');
-          })
-          .catch((e:any) => {
-            console.log(e);
-            this.toastr.error('Kategóriu sa nepodarilo vymazať.');
-          });
-        }).catch((e:any) => {
-          console.log(e);
-          this.toastr.error('Fotku sa nepodarilo vymazať.');
-        });
-      }
+        // this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
+        //   console.log('Successfully deleted image from storage.');
 
-      this.router.navigate(['/dashboard']);
+          this.db.collection(`category/${this.categoryId}/album`).get().toPromise().then((albumSnapshot:any) => {
+            if(albumSnapshot) {
+              var albumCollection = albumSnapshot.docs.map((d:any) => d.data());
+
+              /* 
+                Loop over the fetched album items, to get the album document id
+                This is needed to fetch the gallery subcollection
+              */
+              for(let i = 0; i < albumSnapshot.docs.length; i++) {
+                this.db.firestore.collection(`category/${this.categoryId}/album/${albumSnapshot.docs[i].id}/gallery`).get().then((gallerySnapshot: any) => {
+                  if(gallerySnapshot) {
+                    var galleryItems = gallerySnapshot.docs.map((g:any) => g.data());
+                    /* 
+                      Loop over the fetched gallery items, to get the document id of each gallery item
+                      in order to be able to delete each document
+                    */
+                    for(let x = 0; x < galleryItems.length; x++) {
+                      this.storage.storage.refFromURL(galleryItems[x].downloadURL).delete().then(() => {
+                        this.db.collection('category').doc(this.categoryId).collection('album').doc(albumSnapshot.docs[i].id).collection('gallery').doc(gallerySnapshot.docs[x].id).delete();
+                      });
+                    }
+                  }
+                });
+                /* 
+                  After album documents are deleted, delete the corresponding
+                  albumList document, which is only used for checking if the albumTitle already exists 
+                */
+                this.db.collection('category').doc(this.categoryId).collection('album').doc(albumSnapshot.docs[i].id).delete().then(() => {
+                  this.db.collection('albumList').doc(albumCollection[i].albumTitleFormatted).delete();
+                });
+              }
+            }
+          })
+          .finally(() => {
+            this.storage.storage.refFromURL(this.categoryResults[0].downloadURL).delete().then(() => {
+              this.db.doc(`category/${this.categoryId}`).delete().then(() => {
+                console.log('Successfully deleted category from database.');
+                this.toastr.success('Úspešne vymazaná kategória.');
+                this.router.navigate(['/dashboard']);
+              })
+              .catch((err) => {
+                console.log(err.message);
+                this.toastr.error('Kategóriu sa nepodarilo vymazať.');
+              });
+            });
+          })
+
+          // batch.delete(this.db.firestore.doc(`category/${this.categoryResults[0].id}`));
+          // this.db.collection('category').doc(this.categoryResults[0].id).delete().then(() => {
+          //   console.log('Successfully deleted category from database.');
+          //   this.toastr.success('Úspešne vymazaná kategória.');
+          // })
+          // .catch((e:any) => {
+          //   console.log(e);
+          //   this.toastr.error('Kategóriu sa nepodarilo vymazať.');
+          // });
+        // }).catch((e:any) => {
+        //   console.log(e);
+        //   this.toastr.error('Fotku sa nepodarilo vymazať.');
+        // });
+      }
     }
   }
 

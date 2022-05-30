@@ -22,8 +22,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.categorySubscription = this.gallerySvc.getAllCategories().valueChanges({idField: 'id'}).subscribe((data:any) => {
-      this.categoryList = data;
-      this.emitCategoryValue(data[0].categoryTitle);
+      if(data.length > 0) {
+        this.categoryList = data;
+        this.emitCategoryValue(data[0].categoryTitle);
+      }
     });
 
     this.subjectSubscription = this.categoryChangeEvent.subscribe((data:any) => {

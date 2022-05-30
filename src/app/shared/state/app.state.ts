@@ -81,8 +81,8 @@ export class AppState {
     }
     
   @Action(SetAlbumTitle)
-  setAlbumTitle({ patchState }: StateContext<AppStateModel>, { albumTitleDisplay, albumTitleFormatted, fsId, coverChosen }: SetAlbumTitle) {
-    patchState({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: albumTitleFormatted, fsId: fsId, coverChosen: coverChosen, status: 'pending' });
+  setAlbumTitle({ patchState }: StateContext<AppStateModel>, { albumTitleDisplay, albumTitleFormatted, fsId, categoryId, coverChosen }: SetAlbumTitle) {
+    patchState({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: albumTitleFormatted, fsId: fsId, categoryId: categoryId, coverChosen: coverChosen, status: 'pending' });
   }    
 
   @Action(SetAlbumTitleBefore)

@@ -1,6 +1,6 @@
 <back-button></back-button>
 <div class="wrapper">
-    <ng-container *ngIf="categoryResults">
+    <ng-container *ngIf="categoryResults !== undefined">
         <div class="basic-flex-container-row margin-top-50">
             <div class="basic-flex-row">
                 <input (keyup.enter)="updateCategoryTitle(categoryTitle.value)" type="text" name="categoryTitle" #categoryTitle [value]="categoryResults[0].categoryTitle" [ngClass]="{'title-no-edit': titleEditState == false, 'title-edit' : titleEditState == true }" [disabled]="!titleEditState">

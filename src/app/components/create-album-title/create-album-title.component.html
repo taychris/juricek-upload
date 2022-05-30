@@ -7,14 +7,14 @@
             <input (keyup)="checkAlbumTitleAvailability($event)" type="text" name="albumTitle" #albumTitle formControlName="albumTitle" placeholder="Fantastický album..">
         </div>
         <label class="margin-top-50" for="albumTitle">Kategória albumu:</label>
-        <select name="albumCategory" #albumCategory formControlName="albumCategory">
+        <select name="albumCategory" #albumCategory formControlName="albumCategory" (change)="setCategoryId(albumCategory.value)">
             <option value="" disabled selected>Vybrať..</option>
             <ng-container *ngFor="let category of categoryList">
-            <option value="{{ category.categoryTitle }}">{{ category.categoryTitle }}</option>
+                <option value="{{ category | json }}">{{ category.categoryTitle }}</option>
             </ng-container>
         </select>
         <div style="display: flex; justify-content: center;">
-            <button (click)="albumTitleCreate(albumTitle.value, albumCategory.value)" class="green-button margin-top-50" [disabled]="albumTitleForm.invalid || !titleAvailable">Ďalej</button>
+            <button (click)="albumTitleCreate(albumTitle.value)" class="green-button margin-top-50" [disabled]="albumTitleForm.invalid || !titleAvailable">Ďalej</button>
         </div>
         </form>
     </div>

@@ -16,27 +16,30 @@ export class GalleryService {
   }
 
   getAlbum(category: string) {
-    return this.db.collection('album', ref => ref.where('albumCategory', '==', category));
+    return this.db.collectionGroup('album', ref => ref.where('albumCategory', '==', category))
+    // return this.db.collection('album', ref => ref.where('albumCategory', '==', category));
   }
   
   getAllAlbums() {
-    return this.db.collection('album');
+    return this.db.collectionGroup('album')
+    // return this.db.collection('album');
   }
 
   getGallery(albumTitle: string) {
     return this.db.collection('gallery', ref => ref.where('albumTitle', '==', albumTitle));
   }
 
-  createAlbumTitle(fsId: string, albumTitle: string, albumTitleFormat: string, albumCategory: string, coverImageURL: string, published: boolean) : Promise<any> {
+  createAlbumTitle(fsId: string, albumTitle: string, albumTitleFormat: string, albumCategory: string, coverImageURL: string, published: boolean, categoryId: string) : Promise<any> {
     const formattedAlbumTitle = urlSlug(albumTitleFormat);
 
     const batch = this.db.firestore.batch();
 
-    batch.set(this.db.firestore.doc(`album/${fsId}`), { 
-      albumTitleDisplay: albumTitle, 
-      albumTitleFormatted: formattedAlbumTitle, 
-      albumCategory: albumCategory, 
-      coverImageURL: coverImageURL, 
+    batch.set(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), { 
+      albumTitleDisplay: albumTitle,
+      albumTitleFormatted: formattedAlbumTitle,
+      albumCategory: albumCategory,
+      albumCategoryId: categoryId,
+      coverImageURL: coverImageURL,
       published: published
     });
     batch.set(this.db.firestore.doc(`albumList/${formattedAlbumTitle}`), {
@@ -58,43 +61,57 @@ export class GalleryService {
     return this.db.doc(`albumList/${albumTitle}`).get();
   }
 
-  setAlbumCover(fsId: string, coverImageURL: string, imageId: string) : Promise<any> {
-    this.db.collection('gallery').doc(imageId).update({ isCover: true });
-    return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
+  setAlbumCover(fsId: string, coverImageURL: string, imageId: string, categoryId: string) : Promise<any> {
+    const batch = this.db.firestore.batch();
+
+    batch.update(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(imageId), { isCover: true });
+    batch.update(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), { coverImageURL: coverImageURL })
+    // this.db.collection('gallery').doc(imageId).update({ isCover: true });
+    // return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
+    return batch.commit();
   }
 
-  updateAlbumCover(fsId: string, coverImageURL: string, imageId: string, imageIdBefore: string) : Promise<any> {
-    this.db.collection('gallery').doc(imageIdBefore).get().toPromise().then((data: any) => {
-     if(data.data().downloadURL) {
-      this.db.collection('gallery').doc(imageIdBefore).update({ isCover: false });
-     }
+  updateAlbumCover(fsId: string, coverImageURL: string, imageId: string, imageIdBefore: string, categoryId: string) : Promise<any> {
+    const batch = this.db.firestore.batch();
+    const galleryRef = this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery');
+    const albumRef = this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId);
+    return galleryRef.doc(imageIdBefore).get().then((data: any) => {
+      if(data.data().downloadURL) {
+        batch.update(galleryRef.doc(imageIdBefore), { isCover: false })
+        // this.db.collection('gallery').doc(imageIdBefore).update({ isCover: false });
+      }
+      batch.update(galleryRef.doc(imageId), { isCover: true });
+      batch.update(albumRef, { coverImageURL: coverImageURL });
+    })
+    .finally(() => {
+      batch.commit();
     });
-    this.db.collection('gallery').doc(imageId).update({ isCover: true });
-    return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
+    // this.db.collection('gallery').doc(imageId).update({ isCover: true });
+    // return this.db.collection('album').doc(fsId).update({ coverImageURL: coverImageURL });
   }
 
-  publishAlbum(fsId: string) : Promise<any> {
-    return this.db.collection('album').doc(fsId).update({ published: true });
+  publishAlbum(fsId: string, categoryId: string) : Promise<any> {
+    return this.db.collection('category').doc(categoryId).collection('album').doc(fsId).update({ published: true });
   }
 
-  updateAlbumTitle(fsId: string, albumTitle: string, albumTitleBefore: string) : Promise<any> {
+  updateAlbumTitle(fsId: string, albumTitle: string, albumTitleBefore: string, categoryId: string) : Promise<any> {
     const albumTitleDisplay = albumTitle;
     const formattedAlbumTitle = urlSlug(albumTitle);
     const formattedAlbumTitleBefore = urlSlug(albumTitleBefore);
 
-    this.db.collection('gallery', ref => ref.where('albumTitle', '==', formattedAlbumTitleBefore)).snapshotChanges().pipe(map(actions => actions.map(a => {
+    this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').snapshotChanges().pipe(map(actions => actions.map(a => {
       const data = a.payload.doc.data() as {};
       const id = a.payload.doc.id;
       return { id, ...data };
     }))).subscribe((_doc:any) => {
       for(let i = 0; i < _doc.length; i++) {
-        this.db.doc(`gallery/${_doc[i].id}`).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
+        this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(_doc[i].id).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
       }
     });
 
     const batch = this.db.firestore.batch();
 
-    batch.update(this.db.firestore.doc(`album/${fsId}`), { albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
+    batch.update(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), { albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
     batch.delete(this.db.firestore.doc(`albumList/${formattedAlbumTitleBefore}`));
     batch.set(this.db.firestore.doc(`albumList/${formattedAlbumTitle}`), { albumId: fsId });
 
@@ -105,28 +122,32 @@ export class GalleryService {
     return this.db.collection('album').doc(fsId).update({ albumCategory: albumCategory });
   }
 
-  deleteAlbum(albumId: string, fileList?: any, albumTitle?: string) : Promise<any> {
+  deleteAlbum(albumId: string, categoryId: string, fileList?: any, albumTitle?: string) : Promise<any> {
     const formattedAlbumTitle = albumTitle?.replace(/ /g, '-').toLowerCase();
 
     if(fileList) {
       for(let i = 0; i < fileList.length; i++) {
-        this.deleteImage(fileList[i].id, fileList[i].downloadURL);
+        this.deleteImageFromStorage(fileList[i].downloadURL);
       }
     }
 
     const batch = this.db.firestore.batch();
 
-    batch.delete(this.db.firestore.doc(`album/${albumId}`));
+    batch.delete(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(albumId));
     batch.delete(this.db.firestore.doc(`albumList/${formattedAlbumTitle}`))
 
     return batch.commit();
     // return this.db.collection('album').doc(albumId).delete();
   }
 
-  deleteImage(fileId: string, downloadURL: string) : Promise<any> {
+  deleteImage(categoryId: string, albumId: string, fileId: string, downloadURL: string) : Promise<any> {
     return this.storage.storage.refFromURL(downloadURL).delete().then(() => {
-      this.db.collection('gallery').doc(fileId).delete();
+      this.db.collection('category').doc(categoryId).collection('album').doc(albumId).collection('gallery').doc(fileId).delete();
     });
+  }
+
+  deleteImageFromStorage(downloadURL: string) {
+    return this.storage.storage.refFromURL(downloadURL).delete()
   }
 
   removeSpaceAlbumTitle(albumTitle: string) {

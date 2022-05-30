@@ -8,6 +8,8 @@ import { FormGroup, Validators, FormBuilder } from "@angular/forms";
 import { Store } from '@ngxs/store';
 import { SetCategoryDetails, ResetCategoryDetails } from 'src/app/shared/state/app.actions';
 import { AppState } from 'src/app/shared/state/app.state';
+import { ToastrService } from 'ngx-toastr';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-category',
@@ -15,12 +17,13 @@ import { AppState } from 'src/app/shared/state/app.state';
   styleUrls: ['./create-category.component.scss']
 })
 export class CreateCategoryComponent implements OnInit, OnDestroy {
+  titleEditState: boolean = false;
   //used for state management
   state$!: Observable<AppState>;
   // titleEditState: boolean = false;
   categoryDownloadURL!: string;
   categoryId!: string;
-  categoryTitle!: string;
+  categoryTitle$!: string;
   categoryResults!: any;
   isPublished!: boolean;
 
@@ -28,30 +31,30 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
 
   files: File[] = [];
 
-  categoryForm: FormGroup;
+  // categoryForm: FormGroup;
   
   errorMsg!: string;
 
   categorySubscription!: Subscription;
   stateSubscription!: Subscription;
 
-  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private store: Store, private router: Router, private location: Location) {
-    this.categoryForm = this.fb.group({
-      categoryTitle: ['', Validators.required],
-    });
+  constructor(private storage: AngularFireStorage, private db: AngularFirestore, private fb: FormBuilder, private store: Store, private router: Router, private location: Location, private toastr: ToastrService) {
+    // this.categoryForm = this.fb.group({
+    //   categoryTitle: ['', Validators.required],
+    // });
 
     this.state$ = this.store.select(state => state.app);
 
     this.stateSubscription = this.state$.subscribe((state:any) => {
-      this.categoryTitle = state.categoryTitle;
+      this.categoryTitle$ = state.categoryTitle;
       this.categoryId = state.categoryId;
       this.categoryDownloadURL = state.categoryDownloadURL;
 
-      if(this.categoryTitle) {
-        this.categoryForm.patchValue({ categoryTitle: this.categoryTitle});
-      } else {
-        this.categoryForm.reset();
-      }
+      // if(this.categoryTitle) {
+      //   this.categoryForm.patchValue({ categoryTitle: this.categoryTitle});
+      // } else {
+      //   this.categoryForm.reset();
+      // }
     });
    }
 
@@ -59,15 +62,15 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
     if(this.categoryId) {
       this.getResults(this.categoryId);
 
-      this.categoryForm.patchValue({
-        categoryTitle: this.categoryTitle
-      });
+      // this.categoryForm.patchValue({
+      //   categoryTitle: this.categoryTitle
+      // });
     }
   }
 
-  // toggleEdit() {
-  //   this.titleEditState = !this.titleEditState;
-  // }
+  toggleEdit() {
+    this.titleEditState = !this.titleEditState;
+  }
 
   getResults(categoryId: string) {
     this.categorySubscription = this.db.doc(`category/${categoryId}`).valueChanges({idField: 'id'}).subscribe((data: any) => {
@@ -82,10 +85,25 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  setCategoryTitle(categoryTitle: string) {
-    this.store.dispatch([
-      new SetCategoryDetails(categoryTitle, this.categoryDownloadURL, this.categoryDownloadURL, this.categoryId)
-    ]);
+  updateCategoryTitle(categoryTitle: string) {
+    if(!this.categoryId) {
+      this.toastr.error('Chýba ID kategórie.');
+    } else {
+      if(categoryTitle !== this.categoryTitle$) {
+
+        var categoryRef = this.db.firestore.doc(`category/${this.categoryId}`);
+        categoryRef.update({ categoryTitle: categoryTitle }).then(() => {
+          this.toastr.success('Úspešne zmenený názov kategórie.');
+          this.toggleEdit();
+        })
+        .catch((e:any) => {
+          console.log(e);
+          this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
+        });
+      } else {
+        this.toggleEdit();
+      }
+    }
   }
 
   //toggle the hovering effect - find it in scss
@@ -98,7 +116,7 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
     if(file.item(0)!.size > 3200000) {
       this.errorMsg = "File size exceeds 3Mb.";
     } else {
-      if(this.categoryTitle) {
+      if(this.categoryTitle$) {
         this.errorMsg = "";
         this.files[0] = file.item(0) as File;
       } else {
@@ -144,7 +162,7 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
       this.store.dispatch([
         new ResetCategoryDetails()
       ]);
-      this.categoryForm.reset();
+      // this.categoryForm.reset();
       this.location.back();
     }
   }

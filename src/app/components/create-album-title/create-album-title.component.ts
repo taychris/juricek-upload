@@ -23,6 +23,8 @@ export class CreateAlbumTitleComponent implements OnInit, OnDestroy {
   albumTitleDisplay!: string;
   albumTitleFormatted!: string;
   fsId: string = '';
+  categoryId: string = '';
+  categoryTitle: string = '';
 
   albumStatus!: string;
   titleAvailable!: boolean;
@@ -55,6 +57,11 @@ export class CreateAlbumTitleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fetchCategories();
   }
+
+  setCategoryId(categoryId: any) {
+    this.categoryId = JSON.parse(categoryId).id;
+    this.categoryTitle = JSON.parse(categoryId).categoryTitle;
+  }
  
   fetchCategories() {
     this.categorySubscription = this.db.collection('category').valueChanges({idField: 'id'}).subscribe((data: any) => {
@@ -78,15 +85,15 @@ export class CreateAlbumTitleComponent implements OnInit, OnDestroy {
     }
   }
  
-  albumTitleCreate(albumTitle: string, albumCategory: string) {
-    const formattedAlbumTitle = urlSlug(albumTitle)
+  albumTitleCreate(albumTitle: string) {
+    const formattedAlbumTitle = urlSlug(albumTitle);
     this.fsId = this.db.createId();
     
-    this.gallerySvc.createAlbumTitle(this.fsId, albumTitle, formattedAlbumTitle, albumCategory, '', false).then(() => {
+    this.gallerySvc.createAlbumTitle(this.fsId, albumTitle, formattedAlbumTitle, this.categoryTitle, '', false, this.categoryId).then(() => {
     
      //update state of the app
      this.store.dispatch([
-       new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, false),
+       new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, this.categoryId, false),
      ]);
  
       this.albumTitleForm.reset();

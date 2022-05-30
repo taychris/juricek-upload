@@ -18,10 +18,12 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
   state$!: Observable<AppState>;
   @Select(AppState.coverChosen) coverChosen$!: Observable<any>;
   coverChosen!: any;
+  path!: any;
 
   @Input() file!: File;
   @Input() documentTitle!: string;
   @Input() fileId!: string;
+  @Input() categoryId!: string;
   @Input() collectionName!: string;
   @Input() oldDownloadURL!: string;
   @Input() albumId!: string;
@@ -53,13 +55,17 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
     }
     // The storage path
     // const path = `${this.albumTitle}/${Date.now()}_${this.file.name}`;
-    const path = `images/${Date.now()}_${this.file.name}`;
+    if(this.collectionName === 'category'){
+      this.path = `images/${this.categoryId}/${Date.now()}_${this.file.name}`
+    } else {
+      this.path = `images/${this.categoryId}/${this.albumId}/${Date.now()}_${this.file.name}`
+    }
 
     // Reference to storage bucket
-    const ref = this.storage.ref(path);
+    const ref = this.storage.ref(this.path);
 
     // The main task
-    this.task = this.storage.upload(path, this.file);
+    this.task = this.storage.upload(this.path, this.file);
 
     // Progress monitoring
     this.percentage = this.task.percentageChanges();
@@ -69,23 +75,36 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
       finalize( async() =>  {
         this.downloadURL = await ref.getDownloadURL().toPromise();
 
-        if(this.collectionName === 'gallery') {
+        if(this.collectionName !== 'category') {
           const formattedAlbumTitle = this.documentTitle.replace(/ /g, '-').toLowerCase();
 
-          this.db.collection('gallery').doc(this.fileId).set({ albumId: this.albumId, albumTitleDisplay: this.documentTitle, albumTitleFormatted: formattedAlbumTitle, isCover: false, downloadURL: this.downloadURL, path }).then(() => {
+          this.db.collection('category').doc(this.categoryId).collection('album').doc(this.albumId).collection('gallery').doc().set({
+            albumId: this.albumId, 
+            albumTitleDisplay: this.documentTitle, 
+            albumTitleFormatted: formattedAlbumTitle, 
+            isCover: false, 
+            downloadURL: this.downloadURL, 
+            path: this.path
+          }).then(() => {
             this.uploaded.emit(true);
+          })
+          .catch((e:any) => {
+            console.log(e);
           });
+          // this.db.doc(`category/${this.categoryId}/album/${this.fileId}/gallery`).set({ albumId: this.albumId, albumTitleDisplay: this.documentTitle, albumTitleFormatted: formattedAlbumTitle, isCover: false, downloadURL: this.downloadURL, path: this.path }).then(() => {
+          //   this.uploaded.emit(true);
+          // });
         }
         if(this.collectionName === 'category') {
           if(this.oldDownloadURL !== 'default') { //if the download urls dont match, update the already created category
             this.storage.storage.refFromURL(this.oldDownloadURL).delete().then(() => {
-              this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path }).then(() => {
+              this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path: this.path }).then(() => {
                 //this.uploaded.emit(true);
                 this.uploaded.emit(true);
               });
             });
           } else { //if the category is not already created, create a new one
-            this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path }).then(() => {
+            this.db.collection('category').doc(this.fileId).update({ downloadURL: this.downloadURL, path: this.path }).then(() => {
               this.uploaded.emit(true);
             });
           }

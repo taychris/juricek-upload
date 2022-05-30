@@ -2,16 +2,20 @@
 <div class="wrapper">
     <app-create-category-title></app-create-category-title>
 
-    <ng-container *ngIf="categoryTitle">
+    <ng-container *ngIf="categoryTitle$">
         <div class="basic-flex-container-row margin-top-50">
-            <form [formGroup]="this.categoryForm">
-                <input type="text" name="categoryTitle" #categoryTitle formControlName="categoryTitle" [value]="categoryTitle" class="title-edit">
+            
+            <div class="basic-flex-row">
+            <!-- <form [formGroup]="this.categoryForm"> -->
+                <input (keyup.enter)="updateCategoryTitle(categoryTitle.value)" type="text" name="categoryTitle" #categoryTitle [value]="categoryTitle$" [ngClass]="{'title-no-edit': titleEditState == false, 'title-edit' : titleEditState == true }" [disabled]="!titleEditState">
                 <!-- <button (click)="setCategoryTitle(categoryTitle.value)">Save</button> -->
                 <!-- <svg class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 12L10.2426 16.2427L18.7279 7.75739" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg> -->
-                <img class="button-svg" (click)="setCategoryTitle(categoryTitle.value)" src="../../../assets/svg/Check.svg"/>
-            </form>
+                <img class="button-svg" (click)="toggleEdit()" *ngIf="!titleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
+                <img class="button-svg" (click)="updateCategoryTitle(categoryTitle.value)" *ngIf="titleEditState" src="../../../assets/svg/Check.svg"/>
+            <!-- </form> -->
+            </div>
     
             <div class="basic-flex-row">
                 <button *ngIf="!isPublished" (click)="publishCategory()" class="green-button">Uložiť</button>
@@ -37,7 +41,7 @@
             <ng-container *ngIf="categoryDownloadURL !== 'default'">
                     <div class="column">
                         <div class="img-container">
-                            <img src="{{categoryDownloadURL}}" alt="{{ categoryTitle }}">
+                            <img src="{{categoryDownloadURL}}" alt="{{ categoryTitle$ }}">
                             <div class="button-container">
                                 <img (click)="deleteImage(categoryId, categoryDownloadURL)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
                             </div>
@@ -46,7 +50,7 @@
             </ng-container>
             <div class="column">
                 <ng-container *ngFor="let file of files">
-                    <upload-task [file]="file" [documentTitle]="categoryTitle.value" [fileId]="categoryId" [collectionName]="'category'" [oldDownloadURL]="this.categoryDownloadURL" (uploaded)="onImageUploaded()"></upload-task>
+                    <upload-task [file]="file" [documentTitle]="categoryTitle.value" [fileId]="categoryId" [collectionName]="'category'" [oldDownloadURL]="categoryDownloadURL" [categoryId]="categoryId"  (uploaded)="onImageUploaded()"></upload-task>
                 </ng-container>
             </div>
         </div>

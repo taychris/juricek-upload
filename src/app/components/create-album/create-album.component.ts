@@ -26,6 +26,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  albumTitleFormatted!: string;
  coverImageId!: string;
  fsId: string = '';
+ categoryId: string = '';
  coverChosen!: boolean;
  albumStatus!: string;
  titleAvailable!: boolean;
@@ -55,6 +56,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
      this.albumTitleFormatted = state.albumTitleFormatted;
      this.coverImageId = state.coverImageId;
      this.fsId = state.fsId;
+     this.categoryId = state.categoryId;
      this.coverChosen = state.coverChosen;
      this.albumStatus = state.status;
    });
@@ -78,9 +80,9 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
 
  fetchGalleryItems() {
    if(this.albumTitleDisplay || this.albumTitleFormatted) {
-     this.db.collection('gallery', ref => ref.where('albumId', '==', this.fsId)).valueChanges({idField: 'id'}).subscribe((data:any) => {
+     this.db.collection('category').doc(this.categoryId).collection('album').doc(this.fsId).collection('gallery').valueChanges({idField: 'id'}).subscribe((data: any) => {
        this.uploadedFiles = data;
-     });
+     })
    }
  }
 
@@ -110,33 +112,18 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    }
  }
 
-//  albumTitleCreate(albumTitle: string, albumCategory: string) {
-//    const formattedAlbumTitle = urlSlug(albumTitle)
-//    this.fsId = this.db.createId();
-   
-//    this.gallerySvc.createAlbumTitle(this.fsId, albumTitle, formattedAlbumTitle, albumCategory, '', false).then(() => {
-   
-//     //update state of the app
-//     this.store.dispatch([
-//       new SetAlbumTitle(albumTitle, formattedAlbumTitle, this.fsId, false),
-//     ]);
-
-//      this.albumTitleForm.reset();
-//    });
-//  }
-
  updateAlbumTitle(albumTitleEdit: string) {
    const formattedAlbumTitle = urlSlug(albumTitleEdit);
 
    //update state of the app
    if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable) {
-     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, formattedAlbumTitle).then(() => {
+     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, formattedAlbumTitle, this.categoryId).then(() => {
        this.toggleEdit();
 
        this.toastr.success("Úspešne zmenený názov.");
      
        this.store.dispatch([
-        new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.coverChosen),
+        new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.categoryId, this.coverChosen),
       ]);
      })
      .catch((e:any) => {
@@ -151,7 +138,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    if(this.coverChosen === false) {
     this.toastr.info("Titulná fotka musí byť nastavená.");
    } else {
-     this.gallerySvc.publishAlbum(this.fsId).then(() => {
+     this.gallerySvc.publishAlbum(this.fsId, this.categoryId).then(() => {
       //  window.alert('Successfully published album.');
        this.toastr.success("Úspešne zverejnený album.");
        this.store.dispatch([
@@ -163,7 +150,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  }
 
  cancelAlbum() {
-   this.gallerySvc.deleteAlbum(this.fsId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
+   this.gallerySvc.deleteAlbum(this.fsId, this.categoryId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
      console.log('Successfully deleted album.');
      
      this.toastr.success("Úspešne zrušený album.");
@@ -181,7 +168,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
      window.alert('Image is already a cover photo')
    } else {
      if(!this.coverImageId) {
-       this.gallerySvc.setAlbumCover(albumId, downloadUrl, imageId).then(() => {
+       this.gallerySvc.setAlbumCover(albumId, downloadUrl, imageId, this.categoryId).then(() => {
          this.toastr.success("Titulná fotka nastavená.");
          this.store.dispatch([
            new SetCoverImageId(imageId),
@@ -189,7 +176,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
        });
      }
      if(this.coverImageId !== imageId) {
-       this.gallerySvc.updateAlbumCover(albumId, downloadUrl, imageId, this.coverImageId).then(() => {
+       this.gallerySvc.updateAlbumCover(albumId, downloadUrl, imageId, this.coverImageId, this.categoryId).then(() => {
         this.toastr.success("Titulná fotka zmenená.");
          this.store.dispatch([
            new SetCoverImageId(imageId)
@@ -200,7 +187,7 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  }
 
  deleteImage(imageId: string, downloadUrl: string, isCover: boolean) {
-   this.gallerySvc.deleteImage(imageId, downloadUrl).then(() => {
+   this.gallerySvc.deleteImage(this.fsId, this.categoryId, imageId, downloadUrl).then(() => {
      console.log('Successfully deleted.');
      if(isCover) {
        this.toastr.success("Titulná fotka bola vymazaná.");
