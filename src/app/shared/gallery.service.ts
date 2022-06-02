@@ -34,7 +34,8 @@ export class GalleryService {
 
     const batch = this.db.firestore.batch();
 
-    batch.set(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), { 
+    batch.set(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), {
+      id: fsId,
       albumTitleDisplay: albumTitle,
       albumTitleFormatted: formattedAlbumTitle,
       albumCategory: albumCategory,
@@ -99,15 +100,19 @@ export class GalleryService {
     const formattedAlbumTitle = urlSlug(albumTitle);
     const formattedAlbumTitleBefore = urlSlug(albumTitleBefore);
 
-    this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').snapshotChanges().pipe(map(actions => actions.map(a => {
-      const data = a.payload.doc.data() as {};
-      const id = a.payload.doc.id;
-      return { id, ...data };
-    }))).subscribe((_doc:any) => {
-      for(let i = 0; i < _doc.length; i++) {
-        this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(_doc[i].id).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
-      }
-    });
+    // this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').snapshotChanges().pipe(map(actions => actions.map(a => {
+    //   const data = a.payload.doc.data() as {};
+    //   const id = a.payload.doc.id;
+    //   return { id, ...data };
+    // }))).subscribe((_doc:any) => {
+    //   if(_doc) {
+    //     for(let i = 0; i < _doc.length; i++) {
+    //       this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(_doc[i].id).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
+    //     }
+    //   }
+    // });
+
+    console.log('new:' + formattedAlbumTitle + 'old:' + formattedAlbumTitleBefore);
 
     const batch = this.db.firestore.batch();
 
@@ -122,12 +127,13 @@ export class GalleryService {
     return this.db.collection('album').doc(fsId).update({ albumCategory: albumCategory });
   }
 
-  deleteAlbum(albumId: string, categoryId: string, fileList?: any, albumTitle?: string) : Promise<any> {
-    const formattedAlbumTitle = albumTitle?.replace(/ /g, '-').toLowerCase();
+  deleteAlbum(albumId: string, categoryId: string, albumTitle: string, fileList?: any) : Promise<any> {
+    const formattedAlbumTitle = urlSlug(albumTitle);
 
     if(fileList) {
       for(let i = 0; i < fileList.length; i++) {
-        this.deleteImageFromStorage(fileList[i].downloadURL);
+        console.log(fileList[i]);
+        this.deleteImage(categoryId, albumId, fileList[i].id, fileList[i].downloadURL);
       }
     }
 
@@ -148,18 +154,6 @@ export class GalleryService {
 
   deleteImageFromStorage(downloadURL: string) {
     return this.storage.storage.refFromURL(downloadURL).delete()
-  }
-
-  removeSpaceAlbumTitle(albumTitle: string) {
-    var str = albumTitle;
-    str = str.replace(/\s+/g, '-').toLowerCase();
-    return str;
-  }
-
-  removeDashAlbumTitle(albumTitle: string) {
-    var str = albumTitle;
-    str = str.replace(/-/g, ' ').toLowerCase();
-    return str;
   }
 
   // makeCoverPhoto(albumId:string, downloadURL: string, imageId: string) : Promise<any> {

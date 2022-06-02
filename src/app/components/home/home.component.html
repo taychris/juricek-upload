@@ -1,3 +1,21 @@
-<ng-container *ngFor="let category of categoryList">
-    <p routerLink="/album/{{category.categoryTitle}}">{{ category.categoryTitle }}</p>
-</ng-container>
+<app-navbar [isScrolled]="isScrolled" (target)="scrollToElement($event)"></app-navbar>
+<main>
+    <section id="home" class="hero-container">
+    </section>
+    <section id="about" class="about-container">
+        <h1 class="h1-name">Adrian Juricek</h1>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis, alias iure. 
+            Quod, labore consequuntur! Quibusdam, quas dolore quidem modi perferendis fugiat quae voluptatum ipsa, quos nulla repudiandae perspiciatis id accusantium!
+        </p>
+        <button (click)="scrollToElement('contact')" class="green-button">Kontakt</button>
+    </section>
+    <section id="categories" class="categories-container">
+        <div class="category-card" *ngFor="let category of categoryList" routerLink="/album/{{category.categoryTitle}}">
+            <h1 class="category-card-h1">{{ category.categoryTitle }}</h1>
+            <img src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
+        </div>
+    </section>
+    <section id="contact">
+        <h1>Kontakt</h1>
+    </section>
+</main>

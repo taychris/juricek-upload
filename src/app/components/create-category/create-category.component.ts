@@ -140,10 +140,10 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
         this.store.dispatch([
           new ResetCategoryDetails(),
         ]);
+    
+        this.router.navigate(['/dashboard']);
       });
     }
-    
-    this.router.navigate(['/manage-category', this.categoryId]);
   }
 
   deleteImage(id: string, downloadURL: string) {
@@ -185,9 +185,12 @@ export class CreateCategoryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if(this.categorySubscription) {
       this.categorySubscription.unsubscribe();
-
     }
     this.stateSubscription.unsubscribe();
+    
+    this.store.dispatch([
+      new ResetCategoryDetails()
+    ]);
   }
 
 }

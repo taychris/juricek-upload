@@ -77,28 +77,30 @@ export class ManageCategoryComponent implements OnInit, OnDestroy {
         let categoryTitleBefore = this.categoryTitle;
 
         var categoryRef = this.db.firestore.doc(`category/${this.categoryId}`);
-        this.db.firestore.doc(`category/${this.categoryId}/album`).get().then((snapshot: any) => {
-          console.log(snapshot)
-          if(snapshot) {
+        this.db.collection('category').doc(this.categoryId).collection('album').get().toPromise().then((snapshot: any) => {
+          if(snapshot.docs.exists) {
+            console.log(true);
             for(let i = 0; i < snapshot.length; i++) {
               var albumRef = this.db.firestore.doc(`category/${this.categoryId}/album/${snapshot[i].id}`);
               batch.update(albumRef, { 'albumCategory' : categoryTitle });
               
               //after the for loop finishes, update the category title
-              if(i == snapshot.length - 1) {
-                batch.update(categoryRef, { categoryTitle: categoryTitle });
-
-                batch.commit().then(() => {
-                  this.toggleEdit();
-                  this.toastr.success('Úspešne zmenený názov kategórie.');
-                })
-                .catch((e:any) => {
-                  console.log(e);
-                  this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
-                });
-              }
+              // if(i == snapshot.length - 1) {
+                
+              // }
             }
           }
+        }).finally(() => {
+          batch.update(categoryRef, { categoryTitle: categoryTitle });
+
+          batch.commit().then(() => {
+            this.toggleEdit();
+            this.toastr.success('Úspešne zmenený názov kategórie.');
+          })
+          .catch((e:any) => {
+            console.log(e);
+            this.toastr.error('Nepodarilo sa zmeniť názov kategórie.');
+          });
         })
       } else {
         this.toggleEdit();

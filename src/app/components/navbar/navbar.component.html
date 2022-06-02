@@ -1,0 +1,27 @@
+<nav class="navbar" [ngClass]="{'navbar-inverse': isScrolled || isOpen}" >
+    <div class="wrapper">
+        <div class="logo-container"></div>
+        <div class="burger-container">
+            <div (click)="toggleMenu()" id="nav-icon" [ngClass]="{'open': isOpen}">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <ul>
+            <li (click)="navigateTo('home', false)">Domov</li>
+            <li (click)="navigateTo('about', false)">O mne</li>
+            <li (click)="navigateTo('categories', false)">Portfolio</li>
+            <li (click)="navigateTo('contact', false)">Kontakt</li>
+        </ul>
+        <div class="mobile-ul-container" [ngClass]="{'active': isOpen}">
+            <ul>
+                <li (click)="navigateTo('home', true)">Domov</li>
+                <li (click)="navigateTo('about', true)">O mne</li>
+                <li (click)="navigateTo('categories', true)">Portfolio</li>
+                <li (click)="navigateTo('contact', true)">Kontakt</li>
+            </ul>
+        </div>
+    </div>
+</nav>

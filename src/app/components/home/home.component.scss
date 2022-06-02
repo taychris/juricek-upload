@@ -1,0 +1,117 @@
+@font-face {
+    font-family: "Oranienbaum";
+    src: local("Oranienbaum"),
+      url(../../../assets/fonts/Oranienbaum-Regular.ttf) format("truetype");
+  }
+
+@import "../../../assets/styles/default.scss";
+
+.hero-container {
+    background-image: url('../../../assets/imgs/hero-img.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+section {
+    min-height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+button {
+    font-weight: 200;
+    font-size: $btn-font-size;
+    padding: 10px 25px;
+}
+
+h1 {
+    font-family: "Oranienbaum";
+    font-weight: 200;
+}
+
+p {
+    font-weight: 200;
+    text-align: center;
+    font-size: $p-size;
+    color: $gray-font-color;
+}
+
+.about-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    p {
+        max-width: 600px;
+        margin: 0px 0px $margin-between-text 0px;
+    }
+}
+
+.categories-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: auto !important;
+    height: calc(100vh - 68px);
+    .category-card {
+        width: calc(100vw / 3);
+        height: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        position: relative;
+        z-index: 0;
+        img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: transform .5s ease;
+            &:hover {
+                transform: scale(1.2);
+            }
+        }
+    }
+}
+
+.h1-name {
+  font-size: $h1-size;
+  color: #C29051;
+  text-align: center;
+  margin: $margin-between-text 0px;
+}
+
+.category-card-h1 {
+    text-transform: uppercase;
+    color: #fff;
+    position: absolute;
+    z-index: 1;
+    font-size: 50px;
+    letter-spacing: 5px;
+    margin: 8px 0px 0px 15px;
+}
+
+@media only screen and (max-width: 480px) {
+    .h1-name {
+        font-size: $h1-size-mobile;
+    }
+
+    button {
+        font-size: 13px;
+        padding: 10px 20px;
+    }
+
+    .about-container {
+        p {
+            font-size: $p-size-mobile;
+            max-width: 325px;
+        }
+    }
+
+    .categories-container {
+        flex-direction: column;
+        .category-card {
+            width: 100vw;
+            height: calc(100vh / 3);
+        }
+    }
+}

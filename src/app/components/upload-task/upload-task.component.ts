@@ -78,7 +78,8 @@ export class UploadTaskComponent implements OnInit, OnDestroy {
         if(this.collectionName !== 'category') {
           const formattedAlbumTitle = this.documentTitle.replace(/ /g, '-').toLowerCase();
 
-          this.db.collection('category').doc(this.categoryId).collection('album').doc(this.albumId).collection('gallery').doc().set({
+          this.db.collection('category').doc(this.categoryId).collection('album').doc(this.albumId).collection('gallery').doc(this.fileId).set({
+            id: this.fileId,
             albumId: this.albumId, 
             albumTitleDisplay: this.documentTitle, 
             albumTitleFormatted: formattedAlbumTitle, 

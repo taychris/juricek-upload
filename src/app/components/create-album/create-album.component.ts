@@ -11,6 +11,7 @@ import { GalleryService } from 'src/app/shared/gallery.service';
 import { debounce } from 'lodash';
 import { ToastrService } from 'ngx-toastr';
 import urlSlug from 'url-slug';
+import { debounceTime } from 'rxjs/operators';
 
 
 @Component({
@@ -29,9 +30,11 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  categoryId: string = '';
  coverChosen!: boolean;
  albumStatus!: string;
- titleAvailable!: boolean;
+ albumData!: any;
+ titleAvailable!: boolean | null;
+ loading!: boolean;
 
- albumTitleForm: FormGroup;
+//  albumTitleForm: FormGroup;
  albumTitleEditState: boolean = false;
 
  isHovering!: boolean;
@@ -43,8 +46,9 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
 
  //used for state management
  private stateSubscription!: Subscription;
+//  private categorySubscription!: Subscription;
+ private albumSubscription!: Subscription;
  private gallerySubscription!: Subscription;
- private categorySubscription!: Subscription;
  fileNameErrorList: string[] = [];
 
  constructor(private store: Store, private fb: FormBuilder, private gallerySvc: GalleryService, private db: AngularFirestore, private location: Location, private router: Router, private toastr: ToastrService) {
@@ -61,36 +65,65 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
      this.albumStatus = state.status;
    });
 
-   this.albumTitleForm = this.fb.group({
-     albumTitle: ['', Validators.required],
-     albumCategory: ['', Validators.required],
-   });
+  //  this.albumTitleForm = this.fb.group({
+  //    albumTitle: ['', Validators.required],
+  //    albumCategory: ['', Validators.required],
+  //  });
 
    this.checkAlbumTitleAvailability = debounce(this.checkAlbumTitleAvailability, 400);
  }
 
  ngOnInit() {
+   this.fetchAlbumData();
    this.fetchGalleryItems();
-   this.fetchCategories();
+  //  this.fetchCategories();
  }
 
  onImageUploaded() {
    this.fetchGalleryItems();
  }
 
+ fetchAlbumData() {
+   if(this.fsId) {
+    this.albumSubscription = this.db.collectionGroup('album', ref => ref.where('id', '==', this.fsId)).valueChanges({idField: 'id'}).pipe(debounceTime(500)).subscribe((data:any) => {
+      this.albumData = data;
+      if(this.albumData) {
+        this.store.dispatch([
+          new SetAlbumTitle(this.albumData[0].albumTitleDisplay, this.albumData[0].albumTitleFormatted, this.albumData[0].id, this.albumData[0].albumCategoryId, true),
+        ]);
+      } else {
+        this.location.back();
+      }
+    });
+   }
+ }
+
  fetchGalleryItems() {
    if(this.albumTitleDisplay || this.albumTitleFormatted) {
-     this.db.collection('category').doc(this.categoryId).collection('album').doc(this.fsId).collection('gallery').valueChanges({idField: 'id'}).subscribe((data: any) => {
+    this.db.collectionGroup('gallery', ref => ref.where('albumId', '==', this.fsId)).valueChanges({idField: 'id'}).pipe(debounceTime(500)).subscribe((data: any) => {
        this.uploadedFiles = data;
+       for(let i = 0; i < this.uploadedFiles.length; i++) {
+         if(this.uploadedFiles[i].isCover) {
+          this.store.dispatch([
+            new SetCoverImageId(this.uploadedFiles[i].id),
+          ]);
+         } else {
+           if(i === this.uploadedFiles.length - 1 && !this.coverImageId) {
+            this.store.dispatch([
+              new SetCoverImageId(''),
+            ])
+           }
+         }
+       }
      })
    }
  }
 
- fetchCategories() {
-   this.categorySubscription = this.db.collection('category').valueChanges({idField: 'id'}).subscribe((data: any) => {
-      this.categoryList = data;
-   });
- }
+//  fetchCategories() {
+//    this.categorySubscription = this.db.collection('category').valueChanges({idField: 'id'}).subscribe((data: any) => {
+//       this.categoryList = data;
+//    });
+//  }
 
  toggleEdit() {
    this.albumTitleEditState = !this.albumTitleEditState;
@@ -100,14 +133,15 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    const value = albumTitle.target.value;
    const formattedAlbumTitle = urlSlug(value);
 
+   this.loading = true;
    if(formattedAlbumTitle.length > 0) {
     this.gallerySvc.checkAlbumTitleList(formattedAlbumTitle).toPromise().then((data) => {
       if(data.data()) {
         this.titleAvailable = false;
-        this.toastr.error("Názov albumu už existuje.");
       } else {
         this.titleAvailable = true;
       }
+      this.loading = false;
      })
    }
  }
@@ -116,26 +150,31 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
    const formattedAlbumTitle = urlSlug(albumTitleEdit);
 
    //update state of the app
-   if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable) {
-     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, formattedAlbumTitle, this.categoryId).then(() => {
+   if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable === true && this.loading == false) {
+     this.gallerySvc.updateAlbumTitle(this.fsId, albumTitleEdit, this.albumTitleFormatted, this.categoryId).then(() => {
        this.toggleEdit();
 
        this.toastr.success("Úspešne zmenený názov.");
      
-       this.store.dispatch([
-        new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.categoryId, this.coverChosen),
-      ]);
+      //  this.store.dispatch([
+      //   new SetAlbumTitle(albumTitleEdit, formattedAlbumTitle, this.fsId, this.categoryId, this.coverChosen),
+      // ]);
      })
      .catch((e:any) => {
        console.log(e);
      });
-   } else {
+   } 
+   if(formattedAlbumTitle !== this.albumTitleFormatted && this.titleAvailable === false && this.loading === false) {
+     this.toastr.error("Názov albumu už existuje.");
      this.toggleEdit();
+   }
+   if(formattedAlbumTitle === this.albumTitleFormatted) {
+    this.toggleEdit();
    }
  }
 
  finishAlbum() {
-   if(this.coverChosen === false) {
+   if(!this.coverImageId) {
     this.toastr.info("Titulná fotka musí byť nastavená.");
    } else {
      this.gallerySvc.publishAlbum(this.fsId, this.categoryId).then(() => {
@@ -150,17 +189,13 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
  }
 
  cancelAlbum() {
-   this.gallerySvc.deleteAlbum(this.fsId, this.categoryId, this.uploadedFiles, this.albumTitleFormatted).then(() => {
+   this.gallerySvc.deleteAlbum(this.fsId, this.categoryId, this.albumTitleFormatted, this.uploadedFiles).then(() => {
      console.log('Successfully deleted album.');
      
      this.toastr.success("Úspešne zrušený album.");
+     this.router.navigate(['/dashboard']);
    });
-   
-   this.store.dispatch([
-    new AlbumCancelled()
-  ]);
 
-  this.router.navigate(['/dashboard']);
  }
 
  makeCoverPhoto(albumId: string, downloadUrl: string, imageId: string, isCover: boolean) {
@@ -229,7 +264,11 @@ export class CreateAlbumComponent implements OnInit, OnDestroy {
 
  ngOnDestroy(): void {
    this.stateSubscription.unsubscribe();
-   this.categorySubscription.unsubscribe();
+   this.albumSubscription? this.albumSubscription.unsubscribe() : null;
    this.gallerySubscription ? this.gallerySubscription.unsubscribe() : null;
+   
+   this.store.dispatch([
+     new AlbumCancelled()
+   ]);
  }
 }

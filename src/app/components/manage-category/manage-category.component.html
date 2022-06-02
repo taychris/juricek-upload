@@ -5,7 +5,7 @@
             <div class="basic-flex-row">
                 <input (keyup.enter)="updateCategoryTitle(categoryTitle.value)" type="text" name="categoryTitle" #categoryTitle [value]="categoryResults[0].categoryTitle" [ngClass]="{'title-no-edit': titleEditState == false, 'title-edit' : titleEditState == true }" [disabled]="!titleEditState">
                 <img class="button-svg" (click)="toggleEdit()" *ngIf="!titleEditState" src="../../../assets/svg/Edit_Pencil_01_black.svg"/>
-                <img class="button-svg" (click)="updateCategoryTitle(categoryTitle.value)" *ngIf="titleEditState" src="../../../assets/svg/Check.svg"/>
+                <img class="button-svg" (click)="updateCategoryTitle(categoryTitle.value.toLowerCase())" *ngIf="titleEditState" src="../../../assets/svg/Check.svg"/>
             </div>
             <div class="basic-flex-row margin-top-10">
                 <button (click)="deleteCategory()" class="white-button">Vymazať kategóriu</button>
@@ -31,7 +31,7 @@
         
         <div class="columns-container">
             <ng-container *ngIf="categoryDownloadURL">
-                    <div class="column">
+                    <div class="column grid-container">
                         <div class="img-container" *ngFor="let files of categoryResults">
                             <img src="{{ files.downloadURL }}" alt="{{ files.categoryTitle }}">
                             <div class="button-container">

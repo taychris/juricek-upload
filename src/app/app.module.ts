@@ -34,6 +34,7 @@ import { ManageCategoryComponent } from './components/manage-category/manage-cat
 import { CreateCategoryComponent } from './components/create-category/create-category.component';
 import { CreateAlbumTitleComponent } from './components/create-album-title/create-album-title.component';
 import { CreateCategoryTitleComponent } from './components/create-category-title/create-category-title.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { CreateCategoryTitleComponent } from './components/create-category-title
     ManageCategoryComponent,
     CreateAlbumTitleComponent,
     CreateCategoryTitleComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,

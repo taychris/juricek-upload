@@ -31,7 +31,7 @@
                 <img src="{{files.downloadURL}}" alt="">
                 <div class="button-container">
                     <img (click)="deleteImage(files.id, files.downloadURL, files.isCover)" src="../../../assets/svg/Trash_Empty.svg" class="xs-button-svg" alt="trash can">
-                    <img *ngIf="!files.isCover" (click)="makeCoverPhoto(fsId, files.downloadURL, files.id, files.isCover)" src="../../../assets/svg/Select_Multiple.svg" class="xs-button-svg" alt="select multiple">
+                    <img *ngIf="coverImageId !== files.id" (click)="makeCoverPhoto(fsId, files.downloadURL, files.id, files.isCover)" src="../../../assets/svg/Select_Multiple.svg" class="xs-button-svg" alt="select multiple">
                 </div>
             </div>
         </div>
