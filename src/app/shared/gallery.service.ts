@@ -25,8 +25,8 @@ export class GalleryService {
     // return this.db.collection('album');
   }
 
-  getGallery(albumTitle: string) {
-    return this.db.collection('gallery', ref => ref.where('albumTitle', '==', albumTitle));
+  getGallery(albumTitleFormatted: string) {
+    return this.db.collectionGroup('gallery', ref => ref.where('albumTitleFormatted', '==', albumTitleFormatted));
   }
 
   createAlbumTitle(fsId: string, albumTitle: string, albumTitleFormat: string, albumCategory: string, coverImageURL: string, published: boolean, categoryId: string) : Promise<any> {

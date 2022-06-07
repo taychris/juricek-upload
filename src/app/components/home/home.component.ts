@@ -1,6 +1,8 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GalleryService } from 'src/app/shared/gallery.service';
+import { DOCUMENT } from '@angular/common';
+import * as AOS from 'aos'; 
 
 @Component({
   selector: 'app-home',
@@ -12,7 +14,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   categoryList!: any;
   isScrolled!: boolean;
 
-  constructor(private gSvc: GalleryService) { }
+  // @ViewChild('categories', {static: true}) categoryImg!: ElementRef<HTMLDivElement>
+  // @ViewChildren('aboutChild', {read: ElementRef}) aboutChildren!: QueryList<ElementRef>
+  constructor(private gSvc: GalleryService, @Inject(DOCUMENT) private document: Document) { }
 
   @HostListener('window:scroll', [])
 
@@ -37,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    AOS.init();
     this.categorySubscription = this.gSvc.getAllCategories().valueChanges({idField: 'id'}).subscribe((data) => {
       data ? this.categoryList = data : console.log('No categories found.');
     })

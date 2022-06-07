@@ -1,0 +1,13 @@
+<main>
+    <h1>{{albumTitleDisplayURL}}</h1>
+    <ng-container *ngIf="galleryItems?.length > 0">
+        <ngx-masonry [options]="{ percentPosition: true, gutter: 10, columnWidth: '.masonry-item' }" id="masonry">
+            <div ngxMasonryItem class="masonry-item" *ngFor="let item of galleryItems">
+             <img class="cover-img" src="{{item.downloadURL}}" alt="{{item.albumTitleDisplay}}" (load)="masonry.layout()">
+           </div>
+        </ngx-masonry>
+    </ng-container>
+    <ng-container *ngIf="galleryItems?.length == 0">
+        <p>Zatial neboli pridané žiadne fotkz.</p>
+    </ng-container>
+</main>

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import * as AOS from 'aos'; 
 
 // @HostListener('window:scroll', ['$event'])
 
@@ -16,6 +17,7 @@ export class NavbarComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    AOS.init();
   }
   
   toggleMenu() {

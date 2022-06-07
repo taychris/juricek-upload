@@ -65,7 +65,7 @@ p {
             height: 100%;
             width: 100%;
             object-fit: cover;
-            transition: transform .5s ease;
+            // transition: .5s ease-in-out;
             &:hover {
                 transform: scale(1.2);
             }
@@ -88,6 +88,68 @@ p {
     font-size: 50px;
     letter-spacing: 5px;
     margin: 8px 0px 0px 15px;
+}
+
+.contact-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    h1 {
+        font-size: $h1-size;
+        margin: 50px 0px;
+        color: $primary-color;
+    }
+    .contact-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        max-width: 600px;
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            .form-row-item {
+                display: flex;
+                flex-direction: column;
+                &:first-child {
+                    margin-right: 25px;
+                }
+                &:last-child {
+                    margin-left: 25px;
+                }
+                input {
+                    min-width: 250px;
+                }
+            }
+        }
+        input {
+            width: 100%;
+            margin-bottom: 50px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            margin-bottom: 50px;
+            border: none;
+            border-bottom: 1px solid $primary-color;
+            transition: 0.3s ease-in-out;
+            &:focus {
+              outline: none;
+              transform: scale(1.01);
+            }
+            &:hover {
+              transform: scale(1.01);
+            };
+        }
+        label {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 18px;
+        }
+    }
 }
 
 @media only screen and (max-width: 480px) {
@@ -114,4 +176,70 @@ p {
             height: calc(100vh / 3);
         }
     }
+
+    .contact-container {
+        h1 {
+            font-size: $h1-size-mobile;
+        }
+        .contact-form {
+            .form-row {
+                flex-direction: column;
+                justify-content: center;
+                .form-row-item {
+                    width: 100%;
+                    &:first-child {
+                        margin-right: 0;
+                    }
+                    &:last-child {
+                        margin-left: 0;
+                    }
+                    input {
+                        min-height: unset;
+                    }
+                }
+            }
+            label {
+                font-size: $p-size-mobile;
+            }
+            input {
+                font-size: $p-size-mobile;
+                :last-child {
+                    min-height: 80px !important;
+                }
+            }
+        }
+    }
 }
+
+@-webkit-keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .fadeIn {
+    -webkit-animation-name: fadeIn;
+    animation-name: fadeIn;
+  }
+
+
+  .animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }

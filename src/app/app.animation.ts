@@ -9,7 +9,7 @@ import {
 
 export const fader =
   trigger('routeAnimations', [
-    transition('* => *', [
+    transition('* <=> *', [
       query(':enter', [style({ opacity: 0 /* , position: 'absolute' */ })], {
         optional: true,
       }),
@@ -17,7 +17,7 @@ export const fader =
         ':leave',
         [
           style({ opacity: 1 }),
-          animate('0.3s', style({ opacity: 0 /*, position: 'absolute' */ })),
+          animate('0.6s', style({ opacity: 0 /*, position: 'absolute' */ })),
         ],
         { optional: true }
       ),
@@ -25,7 +25,7 @@ export const fader =
         ':enter',
         [
           style({ opacity: 0 }),
-          animate('0.3s', style({ opacity: 1 /*, position: 'relative' */})),
+          animate('0.6s', style({ opacity: 1 /*, position: 'relative' */})),
         ],
         { optional: true }
       ),
@@ -56,10 +56,10 @@ function slideTo(direction: any) {
     ]),
     group([
       query(':leave', [
-        animate('600ms ease', style({ [direction]: '100%'}))
+        animate('600ms ease', style({ [direction]: '100%', opacity: 0}))
       ], optional),
       query(':enter', [
-        animate('600ms ease', style({ [direction]: '0%'}))
+        animate('600ms ease', style({ [direction]: '0%', opacity: 1}))
       ])
     ]),
     // Normalize the page style... Might not be necessary

@@ -9,6 +9,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
+import { NgxMasonryModule } from 'ngx-masonry';
 
 //For NGXS
 import { NgxsModule } from '@ngxs/store';
@@ -35,6 +36,7 @@ import { CreateCategoryComponent } from './components/create-category/create-cat
 import { CreateAlbumTitleComponent } from './components/create-album-title/create-album-title.component';
 import { CreateCategoryTitleComponent } from './components/create-category-title/create-category-title.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { GalleryComponent } from './components/gallery/gallery.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +57,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     CreateAlbumTitleComponent,
     CreateCategoryTitleComponent,
     NavbarComponent,
+    GalleryComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,6 +79,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     NgxsLoggerPluginModule.forRoot(), 
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsStoragePluginModule.forRoot(),
+    NgxMasonryModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
