@@ -1,0 +1,44 @@
+@import "../../../assets/styles/default.scss";
+
+footer {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: $primary-color;
+    .social-logos-container {
+        margin-top: 50px;
+        a {
+            margin: 0px 10px;
+            img {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    }
+    h1 {
+        font-family: "Comfortaa", cursive;
+        font-size: 15px;
+        font-weight: 200;
+        text-align: center;
+        color: #9f9f9f;
+        margin: 30px 30px 50px 30px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    footer {
+        .social-logos-container {
+            a {
+                img {
+                    width: 35px;
+                    height: 35px;
+                }
+            }
+        }
+        h1 {
+            font-size: 13px;
+        }
+    }
+}

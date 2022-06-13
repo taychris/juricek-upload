@@ -6,11 +6,13 @@
 
 @import "../../../assets/styles/default.scss";
 
-main {
+.main-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    animation: fadeIn 1s linear forwards;
+    min-height: 100vh;
 }
 
 h1 {
@@ -25,10 +27,24 @@ h1 {
 ngx-masonry {
     position: relative;
     width: 90vw;
+    margin-bottom: 50px;
 }
 
-.gutter-sizer {
-    width: 1%;
+.title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+        height: 110px;
+        width: 50px;
+        &:first-child {
+            margin-right: 50px;
+        }
+        &:last-child {
+            margin-left: 50px;
+            transform: rotateY(180deg);
+        }
+    }
 }
 
 .masonry-item { 
@@ -60,7 +76,27 @@ ngx-masonry {
     }
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 @media only screen and (max-width: 480px) {
+    .title-container {
+        img {
+            &:first-child {
+                margin-left: 10px;
+            }
+            &:last-child {
+                margin-right: 10px;
+            }
+        }
+    }
+    
     .masonry-item {
         width: calc(50% - 6px);
 
@@ -71,7 +107,7 @@ ngx-masonry {
     }
 
     h1 {
-        font-size: $h1-size-l-mobile;
+        font-size: 50px;
 
     }
 }

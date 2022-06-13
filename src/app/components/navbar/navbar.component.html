@@ -17,10 +17,12 @@
         </ul>
         <div class="mobile-ul-container" [ngClass]="{'active': isOpen}">
             <ul>
+                <img class="leaf-decoration-top" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
                 <li (click)="navigateTo('home', true)">Domov</li>
                 <li (click)="navigateTo('about', true)">O mne</li>
                 <li (click)="navigateTo('categories', true)">Portfolio</li>
                 <li (click)="navigateTo('contact', true)">Kontakt</li>
+                <img class="leaf-decoration-bottom" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
             </ul>
         </div>
     </div>

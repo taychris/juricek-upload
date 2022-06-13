@@ -9,7 +9,7 @@ import {
 
 export const fader =
   trigger('routeAnimations', [
-    transition('* <=> *', [
+    transition('* => *', [
       query(':enter', [style({ opacity: 0 /* , position: 'absolute' */ })], {
         optional: true,
       }),
@@ -17,7 +17,7 @@ export const fader =
         ':leave',
         [
           style({ opacity: 1 }),
-          animate('0.6s', style({ opacity: 0 /*, position: 'absolute' */ })),
+          animate('0.5s ease', style({ opacity: 0 /*, position: 'absolute' */ })),
         ],
         { optional: true }
       ),
@@ -25,7 +25,7 @@ export const fader =
         ':enter',
         [
           style({ opacity: 0 }),
-          animate('0.6s', style({ opacity: 1 /*, position: 'relative' */})),
+          animate('0.5s ease', style({ opacity: 1 /*, position: 'relative' */})),
         ],
         { optional: true }
       ),

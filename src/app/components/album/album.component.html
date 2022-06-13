@@ -1,15 +1,21 @@
-<main>
-    <h1>{{albumCategory}}</h1>
-    <ng-container *ngIf="albumList?.length > 0">
+<loading-spinner *ngIf="showSpinner"></loading-spinner>
+<div class="main-container">
+    <div class="title-container">
+        <img class="leaf-decoration-left" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+        <h1>{{albumCategory}}.</h1>
+        <img class="leaf-decoration-right" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+    </div>
+    <ng-container *ngIf="albumList?.length != 0">
         <ngx-masonry [options]="{ percentPosition: true, gutter: 10, columnWidth: '.masonry-item' }" id="masonry">
             <div routerLink="/gallery/{{item.albumTitleFormatted}}" ngxMasonryItem class="masonry-item" *ngFor="let item of albumList">
              <!-- <h2>Pozrieť</h2> -->
-             <img class="more-btn" src="../../../assets/svg/chevron-right.svg" alt="">
+             <img class="more-btn" src="../../../assets/svg/chevron-right.svg" alt="Right arrow">
              <img class="cover-img" src="{{item.coverImageURL}}" alt="{{item.albumTitle}}" (load)="masonry.layout()">
            </div>
         </ngx-masonry>
     </ng-container>
     <ng-container *ngIf="albumList?.length == 0">
-        <p>Zatial neboli vytvorené žiadne albumy pre túto kategóriu.</p>
+        <p id="message" #message>Zatial neboli vytvorené žiadne albumy pre túto kategóriu.</p>
     </ng-container>
-</main>
+</div>
+<footer-component></footer-component>

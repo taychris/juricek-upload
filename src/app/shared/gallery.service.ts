@@ -112,9 +112,16 @@ export class GalleryService {
     //   }
     // });
 
-    console.log('new:' + formattedAlbumTitle + 'old:' + formattedAlbumTitleBefore);
-
     const batch = this.db.firestore.batch();
+
+    this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').get().toPromise().then((data : any) => {
+      data.forEach((doc:any) => {
+        this.db.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(doc.id).update({ albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle});
+        // batch.update(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId).collection('gallery').doc(doc.id), { albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle })
+      });
+    })
+
+    console.log('new:' + formattedAlbumTitle + 'old:' + formattedAlbumTitleBefore);
 
     batch.update(this.db.firestore.collection('category').doc(categoryId).collection('album').doc(fsId), { albumTitleDisplay: albumTitleDisplay, albumTitleFormatted: formattedAlbumTitle });
     batch.delete(this.db.firestore.doc(`albumList/${formattedAlbumTitleBefore}`));

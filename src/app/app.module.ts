@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title} from '@angular/platform-browser';
 import { environment } from "src/environments/environment";
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from "@angular/fire/compat/firestore";
@@ -37,6 +37,8 @@ import { CreateAlbumTitleComponent } from './components/create-album-title/creat
 import { CreateCategoryTitleComponent } from './components/create-category-title/create-category-title.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,8 @@ import { GalleryComponent } from './components/gallery/gallery.component';
     CreateCategoryTitleComponent,
     NavbarComponent,
     GalleryComponent,
+    FooterComponent,
+    LoadingSpinnerComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,7 +85,7 @@ import { GalleryComponent } from './components/gallery/gallery.component';
     NgxsStoragePluginModule.forRoot(),
     NgxMasonryModule,
   ],
-  providers: [],
+  providers: [Title],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

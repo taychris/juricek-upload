@@ -15,6 +15,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
   albumTitleDisplayURL!: string;
   galleryItems!: any;
   gallerySubscription!: Subscription;
+  showSpinner: boolean = true;
 
   @ViewChild(NgxMasonryComponent) masonry!: NgxMasonryComponent;
   constructor(private gSvc: GalleryService, private route: ActivatedRoute) { }
@@ -28,7 +29,18 @@ export class GalleryComponent implements OnInit, OnDestroy {
     })
 
     this.albumTitleFormattedURL ? this.galleryItems = this.gSvc.getGallery(this.albumTitleFormattedURL).valueChanges({idField: 'id'}).subscribe((data) => {
-      data ? this.galleryItems = data : console.log('No items were found for this album.');
+      this.galleryItems = data;
+      
+      if(this.galleryItems.length > 0) {
+        var masonryLoaded = document.getElementById('masonry');
+        var messageLoaded = document.getElementById('message');
+        if (masonryLoaded || messageLoaded) {
+          this.showSpinner = false;
+        }
+      } else {
+        console.log('No items were found for this album.');
+        this.showSpinner = false;
+      }
     }) : null;
   }
 

@@ -1,5 +1,10 @@
-<main>
-    <h1>{{albumTitleDisplayURL}}</h1>
+<loading-spinner *ngIf="showSpinner"></loading-spinner>
+<div class="main-container">
+    <div class="title-container">
+        <img class="leaf-decoration-left" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+        <h1>{{albumTitleDisplayURL}}.</h1>
+        <img class="leaf-decoration-right" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+    </div>
     <ng-container *ngIf="galleryItems?.length > 0">
         <ngx-masonry [options]="{ percentPosition: true, gutter: 10, columnWidth: '.masonry-item' }" id="masonry">
             <div ngxMasonryItem class="masonry-item" *ngFor="let item of galleryItems">
@@ -10,4 +15,5 @@
     <ng-container *ngIf="galleryItems?.length == 0">
         <p>Zatial neboli pridané žiadne fotkz.</p>
     </ng-container>
-</main>
+</div>
+<footer-component></footer-component>

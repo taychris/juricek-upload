@@ -1,43 +1,53 @@
-<app-navbar [isScrolled]="isScrolled" (target)="scrollToElement($event)"></app-navbar>
-<main #main>
+<loading-spinner *ngIf="showSpinner"></loading-spinner>
+<div>
+    <app-navbar [isScrolled]="isScrolled" (target)="scrollToElement($event)"></app-navbar>
     <section data-aos="fade-in" data-aos-duration="2000" id="home" #home class="hero-container">
     </section>
-
-    <section id="about" #about class="about-container">
-        <h1 data-aos="fade-up" data-aos-duration="1000" class="h1-name">Adrian Juricek</h1>
-        <p data-aos="fade-up" data-aos-duration="1000">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis, alias iure. 
-            Quod, labore consequuntur! Quibusdam, quas dolore quidem modi perferendis fugiat quae voluptatum ipsa, quos nulla repudiandae perspiciatis id accusantium!
-        </p>
-        <div data-aos="fade-up" data-aos-duration="1000">
-            <button (click)="scrollToElement('contact')" class="green-button">Kontakt</button>
+    
+    <section id="about" #about>
+        <img data-aos="fade-in" data-aos-duration="1000" data-aos-delay="500" class="leaf-decoration-left" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+        <div class="about-container">
+            <h1 data-aos="fade-up" data-aos-duration="1000" class="h1-name">Adrian Juricek</h1>
+            <p data-aos="fade-up" data-aos-duration="1000">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis, alias iure. 
+                Quod, labore consequuntur! Quibusdam, quas dolore quidem modi perferendis fugiat quae voluptatum ipsa, quos nulla repudiandae perspiciatis id accusantium!
+            </p>
+            <div data-aos="fade-up" data-aos-duration="1000">
+                <button (click)="scrollToElement('contact')" class="green-button">Kontakt</button>
+            </div>
         </div>
+        <img data-aos="fade-in" data-aos-duration="1000" data-aos-delay="500" class="leaf-decoration-right" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
     </section>
-
+    
     <section #categories id="categories" class="categories-container">
         <div class="category-card" *ngFor="let category of categoryList; let i = index" routerLink="/album/{{category.categoryTitle}}">
             <h1 data-aos="fade-down" data-aos-duration="1000" [attr.data-aos-delay]="i * 150" class="category-card-h1">{{ category.categoryTitle }}</h1>
             <img data-aos="fade-in" data-aos-duration="1000" src="{{ category.downloadURL }}" alt="{{ category.categoryTitle }}">
         </div>
     </section>
-
-    <section id="contact" #contact class="contact-container">
-        <h1 data-aos="fade-down" data-aos-duration="1000" data-aos-anchor-placement="center-bottom">Napíšte mi.</h1>
-        <form data-aos="zoom-in" data-aos-duration="1000" data-aos-anchor-placement="center-bottom" class="contact-form">
-            <div class="form-row">
-                <div class="form-row-item">
-                    <label for="firstName">Meno:</label>
-                    <input type="text" name="firstName">
+    
+    <section id="contactSection" #contactSection>
+        <img data-aos="fade-down" data-aos-duration="1000" data-aos-delay="500" class="leaf-decoration-top" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
+        <div class="contact-container">
+            <h1 data-aos="fade-down" data-aos-duration="1000" data-aos-anchor-placement="center-bottom" id="contact" #contact>Napíšte mi.</h1>
+            <form data-aos="zoom-in" data-aos-duration="1000" data-aos-anchor-placement="center-bottom" class="contact-form">
+                <div class="form-row">
+                    <div class="form-row-item">
+                        <label for="firstName">Meno:</label>
+                        <input type="text" name="firstName">
+                    </div>
+                    <div class="form-row-item">
+                        <label for="firstName">Priezvisko:</label>
+                        <input type="text" name="firstName">
+                    </div>
                 </div>
-                <div class="form-row-item">
-                    <label for="firstName">Priezvisko:</label>
-                    <input type="text" name="firstName">
-                </div>
-            </div>
-            <label for="email">Email:</label>
-            <input type="email" name="email">
-            <label for="message">Sprava:</label>
-            <textarea name="message" wrap="soft"></textarea>
-            <button data-aos="fade-up" data-aos-duration="1000" data-aos-anchor-placement="center-bottom" class="green-button">Poslať</button>
-        </form>
+                <label for="email">Email:</label>
+                <input type="email" name="email">
+                <label for="message">Sprava:</label>
+                <textarea name="message" wrap="soft"></textarea>
+                <button data-aos="fade-up" data-aos-duration="1000" data-aos-anchor-placement="center-bottom" class="green-button">Poslať</button>
+            </form>
+        </div>
+        <img data-aos="fade-up" data-aos-duration="1000" data-aos-delay="500" class="leaf-decoration-bottom" src="../../../assets/imgs/leaf-faded.png" alt="Dark leaf">
     </section>
-</main>
+</div>
+<footer-component></footer-component>

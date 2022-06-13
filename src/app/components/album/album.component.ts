@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { GalleryService } from 'src/app/shared/gallery.service';
@@ -14,6 +14,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
   albumCategory!: string | null;
   albumList!: any;
   albumSubscription!: Subscription;
+  showSpinner: boolean = true;
 
   constructor(private gSvc: GalleryService, private route: ActivatedRoute) { }
 
@@ -21,8 +22,17 @@ export class AlbumComponent implements OnInit, OnDestroy {
     this.albumCategory = this.route.snapshot.paramMap.get('category');
 
     this.albumCategory ? this.albumSubscription = this.gSvc.getAlbum(this.albumCategory).valueChanges({idField: 'id'}).subscribe((data) => {
-      console.log(data.length);
-      data ? this.albumList = data : console.log('No albums were found for this category.');
+      this.albumList = data
+      if(this.albumList.length > 0) {
+        var masonryLoaded = document.getElementById('masonry');
+        var messageLoaded = document.getElementById('message');
+        if (masonryLoaded || messageLoaded) {
+          this.showSpinner = false;
+        }
+      } else {
+        console.log('No albums were found for this category.');
+        this.showSpinner = false;
+      }
     }) : null;
   }
   

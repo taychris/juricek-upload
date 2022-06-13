@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { GalleryService } from 'src/app/shared/gallery.service';
 import { DOCUMENT } from '@angular/common';
 import * as AOS from 'aos'; 
+import { SeoService } from '../../shared/seo.service';
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   categorySubscription!: Subscription;
   categoryList!: any;
   isScrolled!: boolean;
+  showSpinner: boolean = true;
 
   // @ViewChild('categories', {static: true}) categoryImg!: ElementRef<HTMLDivElement>
   // @ViewChildren('aboutChild', {read: ElementRef}) aboutChildren!: QueryList<ElementRef>
-  constructor(private gSvc: GalleryService, @Inject(DOCUMENT) private document: Document) { }
+  constructor(private seo: SeoService,private gSvc: GalleryService, @Inject(DOCUMENT) private document: Document) { }
 
   @HostListener('window:scroll', [])
 
@@ -42,8 +44,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     AOS.init();
+    this.seo.generateTags();
     this.categorySubscription = this.gSvc.getAllCategories().valueChanges({idField: 'id'}).subscribe((data) => {
       data ? this.categoryList = data : console.log('No categories found.');
+      this.showSpinner = false;
     })
   }
 
